@@ -41,7 +41,7 @@ app.post('/VideoUpload', upload.single('video'), async (req, res) => {
             videoPath: req.file.path, // Store the file path in the database
             notes: req.body.notes,
         });
-        
+
         // Save the video document to the database
         await video.save();
 
@@ -114,7 +114,7 @@ app.post('/VideoFilter', async (req, res) => {
 
 app.get('/videos', async (req, res) => {
     try {
-        const videos = await Video.find({}, '_id title college course branch semester subject otherDetails videoPath name email notes likec dislikec liked disliked batch').sort({ _id: -1 });
+        const videos = await Video.find({}, '_id title college course branch semester subject otherDetails videoPath name email notes likec dislikec liked disliked batch views_cnt').sort({ _id: -1 });
         res.json(videos);
         console.log(videos);
     } catch (error) {
@@ -162,7 +162,8 @@ app.get('/videos/:id', async (req, res) => {
     console.log(videoId);
     // Fetch video information from the database based on the videoId
     const video = await Video.findById(videoId);
-    console.log(video.title);
+    if(video)
+        console.log(video.title);
     if (!video) {
         return res.status(404).send('Video not found');
     }
@@ -237,7 +238,7 @@ app.get('/generate-thumbnail/:videoId', async (req, res) => {
 
 app.post('/register', (req, res) => {
     // Check if the email already exists in the database
-   
+
     var c = 0;
     UserModel.findOne({ email: req.body.email })
         .then(users => {
@@ -300,7 +301,7 @@ app.post('/seeVideos', async (req, res) => {
     filter.$and = filterConditions;
     const videos = await Video.find(filter, '_id title college course branch semester subject otherDetails videoPath name email notes likec dislikec liked disliked')
         .sort({ _id: -1 });
-    
+
     console.log(filter);
     console.log(videos);
     res.json(videos);
@@ -390,6 +391,53 @@ app.post('/dislike/:videoId/:email', async (req, res) => {
         return res.status(500).json({ error: 'Failed to like the video' });
     }
 });
+
+app.post('/countViews', async (req, res) => {
+    const { email, fingerprint, arg } = req.body;
+    let total_views;
+    console.log("HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
+    console.log(arg);
+    console.log(fingerprint)
+    if (email) {
+        Video.findById(arg).then(video => {
+            if (video) {
+                const existingView = video.views.find(view => view.email === email);
+                if (!existingView) {
+                    video.views.push({ email: email, fingerprint: fingerprint });
+                    video.views_cnt += 1;
+                    video.save();
+                    total_views = video.views.length;
+                    console.log("Its unique view");
+                    return res.json({ video });
+                }
+                else {
+                    console.log("Its not unique view");
+                    return res.json({ video });
+                }
+            }
+        });
+    }
+    else {
+        Video.findById(arg).then(video => {
+            if (video) {
+                const existingView = video.views.find(view => view.fingerprint === fingerprint && view.email === email);
+                if (!existingView) {
+                    video.views.push({ email: email, fingerprint: fingerprint });
+                    video.views_cnt += 1;
+                    video.save();
+                    total_views = video.views.length;
+                    console.log("Its unique view");
+                    return res.json({ video });
+                }
+                else {
+                    console.log("Its not unique view from fingerprint");
+                    return res.json({ video });
+                }
+            }
+        })
+
+    }
+})
 
 
 

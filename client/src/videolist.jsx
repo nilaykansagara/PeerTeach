@@ -6,13 +6,14 @@ import profileImage from './assets/user.png';
 import Profile from "./Profile";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp, faThumbsDown, faEye } from '@fortawesome/free-solid-svg-icons';
 
 const temp = localStorage.getItem('loggedin');
 
 const VideoList = () => {
     // const history = useHistory();
     const isUserLoggedIn = JSON.parse(localStorage.getItem('loggedin')) || false;
+    const [change_view, setChange_view] = useState(0);
     const [userinfo, setinfo] = useState('');
     const [likes, setLikes] = useState('');
     const [dislikes, setDisLikes] = useState('');
@@ -178,6 +179,7 @@ const VideoList = () => {
             });
     };
 
+    
     useEffect(() => {
         let utemp = localStorage.getItem('userData');
         const userinfo = JSON.parse(utemp);
@@ -190,7 +192,31 @@ const VideoList = () => {
             .catch((error) => {
                 console.error('Error fetching videos:', error);
             });
-    }, []);
+    }, [change_view]);
+
+    const recordView = async(arg) => {
+        console.log(arg);
+        let email;
+        if(isLoggedIn)
+        {
+            let utemp = localStorage.getItem('userData');
+            const userinfo = JSON.parse(utemp);
+            email = userinfo.email;
+        }
+        else{
+            email = null;
+        }
+        let fingerprint = localStorage.getItem('fingerprint');
+        console.log(fingerprint);
+        axios.post('http://localhost:3001/countViews', {email, fingerprint, arg})
+        .then((response) => {
+            console.log("View is updated successfully."); 
+            setChange_view((c) => !c)
+        })
+        
+    }
+
+    
 
     return (
         <div>
@@ -344,8 +370,10 @@ const VideoList = () => {
                     ) : (
                         <ul>
                             {videos.map((video) => (
+                            
                                 <div key={video._id} style={{ display: 'inline-flex', alignItems: 'center', marginRight: '0.2%', marginBottom: '8px' }}>
-                                    <video controls width="270" height="152">
+                                    {console.log(video.views_cnt)}
+                                    <video controls  onPlay={() => recordView(video._id)} width="270" height="152">
                                         <source src={`http://localhost:3001/videos/${video._id}`} type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
@@ -372,7 +400,10 @@ const VideoList = () => {
                                             &nbsp;
                                             &nbsp;
                                             &nbsp;
+                                            <span><FontAwesomeIcon icon={faEye}/></span>
                                             &nbsp;
+                                            <span><b>{video.views_cnt}</b></span>
+
                                         </>)}
 
                                         <span>

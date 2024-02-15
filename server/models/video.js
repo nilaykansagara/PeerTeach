@@ -61,6 +61,21 @@ const videoSchema = new mongoose.Schema({
     disliked: [{
         type: String, // Store user emails who disliked the video
     }],
+    views: [
+        {
+            email:{
+                type: String
+            },
+            fingerprint:{
+                type: String
+            }
+        }
+    ],
+    views_cnt:{
+        type: Number,
+        default:0,
+    }
+    
 
 });
 

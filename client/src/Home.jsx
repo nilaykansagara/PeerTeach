@@ -1,9 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from 'react';
 import './home.css';
+import Fingerprint2 from "fingerprintjs2";
 
 function Home() {
+    useEffect(() => {
+        const generateFingerprint = async()=>{
+            try{
+                const fingerprintValue = await new Promise((resolve, reject) => {
+                    Fingerprint2.get((components) => {
+                        const fingerprint = Fingerprint2.x64hash128(components.map(pair => pair.value).join(), 31);
+                        resolve(fingerprint)
+                    });
+                });
+                console.log("HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIiiiiiiiiiiiii")
+                console.log(fingerprintValue);
+                localStorage.setItem('fingerprint', fingerprintValue);
 
+            }catch(error)
+            {
+                console.log("Fingerprint error");
+            }
+        }
+        generateFingerprint();
+    }, [])
     return (
         <div className="full-screen">
             <header>
@@ -40,7 +60,7 @@ function Home() {
 
             {/* Add other sections as per your requirements */}
 
-            <footer style={{ height:'100%' }}>
+            <footer style={{ height: '100%' }}>
                 <p>&copy; 2023 PeerTeach. All rights reserved.</p>
             </footer>
         </div>

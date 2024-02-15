@@ -102,7 +102,7 @@ const VideoUploadForm = () => {
 
         try {
             // Send a POST request to the Flask backend
-            const response = await fetch('http://localhost:5000/classify_video', {
+                const response = await fetch('http://localhost:5000/classify_video', {
                 method: 'POST',
                 body: formDataToSend,
             });
@@ -127,9 +127,7 @@ const VideoUploadForm = () => {
             //   }
         } catch (error) {
             console.error('Error:', error);
-        }
-
-        
+        } 
     }
 
     return (
