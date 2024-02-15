@@ -141,6 +141,57 @@ app.post('/likefind/:email', async (req, res) => {
     }
 });
 
+app.post('/historyfind/:email', async (req, res) => {
+    const userEmail = req.params.email;
+    console.log("i am don");
+    try {
+
+        const videos = await Video.find({}, '_id title college course branch semester subject otherDetails videoPath name email notes likec dislikec liked disliked views_cnt views').sort({ _id: -1 });
+        //const existingView = videos.views.find(view => view.email === userEmail);
+        //const HistoryVideos = videos.filter(video => video.views.email.includes(userEmail));
+        const HistoryVideos = videos.filter(video => {
+            return video.views.some(view => view.email === userEmail);
+        });
+        console.log("don video watch");
+        //console.log();
+        // Send the filtered videos as a response
+        res.json(HistoryVideos);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching videos' });
+    }
+});
+
+app.post('/watchlaterfind/:email', async (req, res) => {
+    const userEmail = req.params.email;
+    console.log("i am don of watch later");
+    try {
+        // Find the user document based on the provided email
+        const user = await UserModel.findOne({ email: userEmail });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Get the video IDs from the user's watch later list
+        const watchLaterVideoIds = user.watch_later.map(item => item.vid);
+
+        // Find videos whose IDs are in the watch later list
+        const videos = await Video.find({ _id: { $in: watchLaterVideoIds } })
+            .sort({ timestamp: -1 }) // Sort by timestamp in descending order
+            .select('_id title college course branch semester subject otherDetails videoPath name email notes likec dislikec liked disliked views_cnt views');
+
+        console.log("don video watch");
+
+        // Send the filtered and sorted videos as a response
+        res.json(videos);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching videos' });
+    }
+});
+
+
 app.post('/dislikefind/:email', async (req, res) => {
     const userEmail = req.params.email;
     try {
@@ -162,7 +213,7 @@ app.get('/videos/:id', async (req, res) => {
     console.log(videoId);
     // Fetch video information from the database based on the videoId
     const video = await Video.findById(videoId);
-    if(video)
+    if (video)
         console.log(video.title);
     if (!video) {
         return res.status(404).send('Video not found');
@@ -357,6 +408,70 @@ app.post('/like/:videoId/:email', async (req, res) => {
         return res.status(500).json({ error: 'Failed to like the video' });
     }
 });
+
+
+app.post('/watchLater/:videoId/:email', async (req, res) => {
+    const videoId = req.params.videoId;
+    const userEmail = req.params.email;
+    console.log(userEmail);
+    try {
+        const user = await UserModel.findOne({ email: userEmail });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const isVideoAlreadyAdded = user.watch_later.some(item => item.vid === videoId);
+
+        if (isVideoAlreadyAdded) {
+            console.log("already added error");
+            return res.status(400).json({ error: 'Video already in watch later list' });
+        }
+
+        user.watch_later.push({ vid: videoId, timestamp: Date.now().toString() });
+
+        await user.save();
+
+        return res.json({ message: 'Video added to watch later list successfully' });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Failed to add video to watch later list' });
+    }
+});
+
+app.post('/removewatchLater/:videoId/:email', async (req, res) => {
+    const videoId = req.params.videoId;
+    const userEmail = req.params.email;
+    try {
+        const user = await UserModel.findOne({ email: userEmail });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const index = user.watch_later.findIndex(item => item.vid === videoId);
+
+        if (index === -1) {
+            return res.status(400).json({ error: 'Video not found in watch later list' });
+        }
+
+        user.watch_later.splice(index, 1);
+
+        await user.save();
+
+        const remainingVideoIds = user.watch_later.map(item => item.vid);
+
+        const remainingVideos = await Video.find({ _id: { $in: remainingVideoIds } })
+            .select('_id title college course branch semester subject otherDetails videoPath name email notes likec dislikec liked disliked views_cnt views');
+
+        return res.json(remainingVideos);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Failed to remove video from watch later list' });
+    }
+});
+
+
 
 app.post('/dislike/:videoId/:email', async (req, res) => {
     const videoId = req.params.videoId;

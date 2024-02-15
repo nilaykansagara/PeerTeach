@@ -6,7 +6,7 @@ import profileImage from './assets/user.png';
 import Profile from "./Profile";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faThumbsDown, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp, faThumbsDown, faEye, faClock, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const temp = localStorage.getItem('loggedin');
 
@@ -17,6 +17,7 @@ const VideoList = () => {
     const [userinfo, setinfo] = useState('');
     const [likes, setLikes] = useState('');
     const [dislikes, setDisLikes] = useState('');
+    const [watchlaterflag, setwlf] = useState('');
     const [videos, setVideos] = useState([]);
     const [isLoggedIn, setIsLoggedIn] = useState(isUserLoggedIn);
     const navigate = useNavigate();
@@ -64,6 +65,23 @@ const VideoList = () => {
                 console.error('Error liking video', error);
             });
     };
+
+    const watchLater = (videoId, email) => {
+        axios.post(`http://localhost:3001/watchLater/${videoId}/${email}`)
+            .then((response) => {
+                console.log("added errorchecking");
+                console.log(response.status);
+                if (response.status === 200) {
+                    alert('Video added to watch later list successfully');
+                }
+            })
+            .catch((error) => {
+                console.log("here in added error");
+                alert('Video is already in watch later list');
+                console.error('Error adding video to watch later list', error);
+            });
+    };
+
 
     const handleDislike = (videoId, email) => {
         // Make an API request to update the disliked array in the backend
@@ -156,6 +174,7 @@ const VideoList = () => {
     }
 
     const likedlist = () => {
+        setwlf(null);
         console.log("hello from likedlist");
         axios.post(`http://localhost:3001/likefind/${userinfo.email}`)
             .then((response) => {
@@ -168,6 +187,7 @@ const VideoList = () => {
     };
 
     const dislikedlist = () => {
+        setwlf(null);
         // Filter videos that are liked by the current logged-in user
         axios.post(`http://localhost:3001/dislikefind/${userinfo.email}`)
             .then((response) => {
@@ -179,8 +199,47 @@ const VideoList = () => {
             });
     };
 
-    
+    const history = () => {
+        setwlf(null);
+        console.log("hello from history");
+        axios.post(`http://localhost:3001/historyfind/${userinfo.email}`)
+            .then((response) => {
+                console.log("hello from history list new");
+                setVideos(response.data);
+            })
+            .catch((error) => {
+                console.error('Error liking video', error);
+            });
+    };
+
+    const watchlater = () => {
+        console.log("hello from watch later list");
+        setwlf(1);
+        axios.post(`http://localhost:3001/watchlaterfind/${userinfo.email}`)
+            .then((response) => {
+                console.log("hello from watch later list new");
+                setVideos(response.data);
+            })
+            .catch((error) => {
+                console.error('Error liking video', error);
+            });
+    };
+
+    const removewatchLater = (videoId, email) => {
+        axios.post(`http://localhost:3001/removewatchLater/${videoId}/${email}`)
+            .then((response) => {
+                console.log("remove checking");
+                setwlf(1);
+                setVideos(response.data);
+            })
+            .catch((error) => {
+                console.log('here in error');
+                console.error('Error in remove', error);
+            });
+    };
+
     useEffect(() => {
+        setwlf(null);
         let utemp = localStorage.getItem('userData');
         const userinfo = JSON.parse(utemp);
         setinfo(userinfo);
@@ -194,29 +253,26 @@ const VideoList = () => {
             });
     }, [change_view]);
 
-    const recordView = async(arg) => {
+    const recordView = async (arg) => {
         console.log(arg);
         let email;
-        if(isLoggedIn)
-        {
+        if (isLoggedIn) {
             let utemp = localStorage.getItem('userData');
             const userinfo = JSON.parse(utemp);
             email = userinfo.email;
         }
-        else{
+        else {
             email = null;
         }
         let fingerprint = localStorage.getItem('fingerprint');
         console.log(fingerprint);
-        axios.post('http://localhost:3001/countViews', {email, fingerprint, arg})
-        .then((response) => {
-            console.log("View is updated successfully."); 
-            setChange_view((c) => !c)
-        })
-        
-    }
+        axios.post('http://localhost:3001/countViews', { email, fingerprint, arg })
+            .then((response) => {
+                console.log("View is updated successfully.");
+                setChange_view((c) => !c)
+            })
 
-    
+    }
 
     return (
         <div>
@@ -248,6 +304,12 @@ const VideoList = () => {
                                     </li>
                                     <li class="nav-item">
                                         <button className="btn_1" style={{ marginTop: '12px', color: '#C8C8C8', fontSize: '17px', }} aria-current="page" onClick={dislikedlist}>Disliked Videos</button>
+                                    </li>
+                                    <li class="nav-item">
+                                        <button className="btn_1" style={{ marginTop: '12px', color: '#C8C8C8', fontSize: '17px', }} aria-current="page" onClick={history}>History</button>
+                                    </li>
+                                    <li class="nav-item">
+                                        <button className="btn_1" style={{ marginTop: '12px', color: '#C8C8C8', fontSize: '17px', }} aria-current="page" onClick={watchlater}>Watch later</button>
                                     </li>
                                     <li class="nav-item">
                                         <button className="btn_1" style={{ marginTop: '12px', color: '#C8C8C8', fontSize: '17px', }} aria-current="page" onClick={Logout}>Logout</button>
@@ -370,10 +432,10 @@ const VideoList = () => {
                     ) : (
                         <ul>
                             {videos.map((video) => (
-                            
+
                                 <div key={video._id} style={{ display: 'inline-flex', alignItems: 'center', marginRight: '0.2%', marginBottom: '8px' }}>
                                     {console.log(video.views_cnt)}
-                                    <video controls  onPlay={() => recordView(video._id)} width="270" height="152">
+                                    <video controls onPlay={() => recordView(video._id)} width="270" height="152">
                                         <source src={`http://localhost:3001/videos/${video._id}`} type="video/mp4" />
                                         Your browser does not support the video tag.
                                     </video>
@@ -383,7 +445,16 @@ const VideoList = () => {
                                         <p style={{ marginBottom: '1px', fontSize: '15px' }}>
                                             Subject: <b>{video.subject}</b> | Semester: <b>{video.semester}</b> | Branch: <b>{video.branch}</b> | Course : <b>{video.course}</b> | College: <b>{video.college}</b> | Batch of Uploader : <b>{video.batch}</b></p>
                                         <p style={{ marginBottom: '0%', fomarginBottom: '2px', fontSize: '15px' }}>Uploaded by: <b>{video.name}</b><br />Email id: <b>{video.email}</b></p>
+                                        {!isLoggedIn && (<><p><FontAwesomeIcon icon={faEye} /><b>{video.views_cnt}</b></p></>)}
+
                                         {isLoggedIn && (<>
+
+                                            <FontAwesomeIcon icon={faEye} />
+                                            &nbsp;
+                                            <b>{video.views_cnt}</b>
+                                            &nbsp;
+                                            &nbsp;
+                                            &nbsp;
                                             <button style={{ backgroundColor: '#99CCFF', border: 'solid 2px', borderColor: 'black', borderRadius: '50%' }} onClick={() => handleLike(video._id, userinfo.email)}>
                                                 <FontAwesomeIcon icon={faThumbsUp} />
                                             </button>
@@ -397,12 +468,21 @@ const VideoList = () => {
                                             </button>
                                             &nbsp;
                                             <span>{video.dislikec}</span>
+                                            {!watchlaterflag && (
+                                                <>
+                                                    &nbsp;
+                                                    &nbsp;
+                                                    &nbsp;
+
+                                                    <button style={{ backgroundColor: '#FFD700', border: 'solid 2px', borderColor: 'black', borderRadius: '10px' }} onClick={() => watchLater(video._id, userinfo.email)}>
+                                                        <FontAwesomeIcon icon={faClock} /> Watch Later
+                                                    </button>
+                                                </>
+                                            )}
+
                                             &nbsp;
                                             &nbsp;
                                             &nbsp;
-                                            <span><FontAwesomeIcon icon={faEye}/></span>
-                                            &nbsp;
-                                            <span><b>{video.views_cnt}</b></span>
 
                                         </>)}
 
@@ -431,7 +511,14 @@ const VideoList = () => {
                                                 </a>
                                             )}
                                         </span>
+                                        &nbsp;
+                                        &nbsp;
 
+                                        {watchlaterflag && (
+                                            <button style={{ backgroundColor: '#FF3131', border: 'solid 2px', borderColor: 'black', borderRadius: '15px' }} onClick={() => removewatchLater(video._id, userinfo.email)}>
+                                                <FontAwesomeIcon icon={faTrash} /> Remove
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             ))

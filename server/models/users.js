@@ -32,7 +32,17 @@ const UserSchema = new mongoose.Schema({
     batchYear: {
         type: Number,
         required: true
-    }
+    },
+    watch_later: [
+        {
+            vid: {
+                type: String
+            },
+            timestamp: {
+                type: String
+            }
+        }
+    ],
 });
 
 const UserModel = mongoose.model("students", UserSchema);
