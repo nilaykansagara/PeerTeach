@@ -54,9 +54,13 @@ function Home() {
                     <p>Join PeerTeach and start sharing your knowledge with others.</p>
                     {/* <a href="/Signin">Sign In Now as Student</a><br /><br />
                     <a href="/Signin">Sign In Now as Businessman</a> */}
-                    <a style={{ marginTop: '25%', marginBottom: '15%' }} href="/videos">Get Started!</a>
+                    <a className="xyz" style={{ marginTop: '25%', marginBottom: '15%' }} href="/videos">Get Started!</a>
+                    <p><a className="new_a" href="/Busilogin">Sponser Video!</a></p>
                 </div>
             </section>
+            
+
+            
 
             {/* Add other sections as per your requirements */}
 

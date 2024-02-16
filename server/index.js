@@ -4,9 +4,11 @@ const cors = require("cors")
 const app = express()
 const multer = require('multer');
 const UserModel = require('./models/users')
-const Video = require('./models/video');
-const fs = require('fs');
-const path = require('path');
+//const University = require('./models/')
+const Video = require('./models/video')
+const Businessman = require('./models/Businessman')
+const fs = require('fs')
+const path = require('path')
 
 app.use(express.json())
 app.use(cors())
@@ -553,6 +555,53 @@ app.post('/countViews', async (req, res) => {
 
     }
 })
+
+app.post('/busiregister', (req, res) => {
+    // Check if the email already exists in the database
+
+    var c = 0;
+    Businessman.findOne({ email: req.body.email })
+        .then(users => {
+            if (users) {
+                c = 1;
+                // If the email already exists, send a response indicating it's a duplicate
+                res.json({ c });
+            } else {
+                c = 0;
+                // If the email doesn't exist, create a new user and save it to the database
+                Businessman.create(req.body)
+                    .then(users => res.json({ users, c }))
+                    .catch(err => res.json(err))
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ message: 'An error occurred while checking for duplicate emails.' });
+        });
+});
+
+app.post('/busilogin', (req, res) => {
+    console.log("Hello");
+    const { email, password } = req.body;
+    Businessman.findOne({ email: email }).then(
+        async user => {
+            if (user) {
+                if (user.password === password) {
+
+                    // Define an array to hold filter conditions
+                    res.json({ mes: "Success", userData: user });
+                }
+                else {
+                    res.json("Password is incorrect");
+                }
+            }
+            else {
+                res.json("User not existed");
+            }
+        }
+    )
+})
+
+
 
 
 

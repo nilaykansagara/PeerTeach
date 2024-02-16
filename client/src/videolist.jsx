@@ -445,7 +445,7 @@ const VideoList = () => {
                                         <p style={{ marginBottom: '1px', fontSize: '15px' }}>
                                             Subject: <b>{video.subject}</b> | Semester: <b>{video.semester}</b> | Branch: <b>{video.branch}</b> | Course : <b>{video.course}</b> | College: <b>{video.college}</b> | Batch of Uploader : <b>{video.batch}</b></p>
                                         <p style={{ marginBottom: '0%', fomarginBottom: '2px', fontSize: '15px' }}>Uploaded by: <b>{video.name}</b><br />Email id: <b>{video.email}</b></p>
-                                        {!isLoggedIn && (<><p><FontAwesomeIcon icon={faEye} /><b>{video.views_cnt}</b></p></>)}
+                                        {!isLoggedIn && (<><p><FontAwesomeIcon icon={faEye} /> &nbsp; <b> {video.views_cnt}</b></p></>)}
 
                                         {isLoggedIn && (<>
 

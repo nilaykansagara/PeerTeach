@@ -9,6 +9,9 @@ import VideoUploadForm from './videoupload'
 import VideoList from './videolist'
 import VideoPlayer from './Videoplay'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import BusinessmanHome from './BusinessmanHome';
+import Businesslogin from './B_login';
+import Businesssignup from './B_signup';
 
 
 function App() {
@@ -25,6 +28,9 @@ function App() {
         <Route path="/" element={<Home />}></Route>
         <Route path="/menu" element={<Menu />}></Route>
         <Route path="/videos/:id" element={<VideoPlayer />} />
+        <Route path="/BusinessmanHome" element={<BusinessmanHome />} />
+        <Route path="/Busilogin" element={<Businesslogin />} />
+        <Route path="/Busisignup" element={<Businesssignup />} /> 
       </Routes>
     </BrowserRouter>
   )

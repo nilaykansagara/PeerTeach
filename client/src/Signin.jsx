@@ -85,6 +85,9 @@ function Signin() {
                                         <p style={{ marginBottom: '-1%' }}>
                                             Don't have an account? &nbsp;<Link to="/register">Sign up here</Link>
                                         </p>
+                                        <p style={{ marginBottom: '-1%' }}>
+                                            <Link to="/Busilogin">Go for Business account</Link>
+                                        </p>
                                     </div>
                                     <div className="col-md-10 col-lg-6 order-1 order-lg-2 d-flex align-items-center">
                                         <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/draw1.webp" alt="Registration" className="img-fluid" />
