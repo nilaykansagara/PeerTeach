@@ -63,20 +63,18 @@ const videoSchema = new mongoose.Schema({
     }],
     views: [
         {
-            email:{
+            email: {
                 type: String
             },
-            fingerprint:{
+            fingerprint: {
                 type: String
             }
         }
     ],
-    views_cnt:{
+    views_cnt: {
         type: Number,
-        default:0,
+        default: 0,
     }
-    
-
 });
 
 const videoModel = mongoose.model("video", videoSchema);

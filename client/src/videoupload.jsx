@@ -1,4 +1,4 @@
-import React, { useState, CSSProperties } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 // import {Toaster, toast} from "react-hot-toast";
@@ -29,14 +29,82 @@ const VideoUploadForm = () => {
     });
     const [errors, setErrors] = useState({});
     const [verified, setVerified] = useState(0);
+    const [colleges, setColleges] = useState([]);
+    const [clslflag, setclsl] = useState(null);
+    const [courseSelected, setCourseSelected] = useState(false);
+    const [collegeSelected, setcollegeSelected] = useState(false);
+    const [selectedclpr, setselectedclpr] = useState(null);
+    const [branches, setBranches] = useState(null);
+    const [isgoodsem, setgoodsem] = useState(false);
+    const [sems, setSems] = useState(null);
 
 
-   
 
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData({ ...formData, [name]: value });
+
+        if (formData.college && name === "course") {
+
+            const isCourseSelected = !!value; // Convert value to boolean
+            setCourseSelected(isCourseSelected);
+            console.log("hello from course change");
+            const selectedCollegeObj = colleges.find(college => college.nickname === formData.college);
+            //console.log(selectedCollegeObj);
+            if (selectedCollegeObj) {
+                const selectedProgram = selectedCollegeObj.programs.find(obj => obj.course === value);
+                console.log(selectedProgram);
+                if (selectedProgram) {
+                    setBranches(selectedProgram.branches);
+                }
+            }
+        }
+
+        if (formData.college && formData.course && name === "branch") {
+
+            const isbranchSelectedtemp = !!value; // Convert value to boolean
+            setgoodsem(isbranchSelectedtemp);
+            console.log("hello from branch change");
+            const selectedCollegeObj = colleges.find(college => college.nickname === formData.college);
+            //console.log(selectedCollegeObj);
+            if (selectedCollegeObj) {
+                const selectedProgram = selectedCollegeObj.programs.find(obj => obj.course === formData.course);
+                console.log("hello from branch change");
+                console.log(selectedProgram.total_sems);
+                //console.log(selectedProgram);
+                if (selectedProgram) {
+                    setSems(selectedProgram.total_sems);
+                }
+            }
+        }
     };
+
+    const handleChangecl = (event) => {
+        const { name, value } = event.target;
+        console.log(value);
+
+        //const selcollege = colleges.find((tcollege) => tcollege._id === value);
+        //console.log(selcollege);
+        //setFormData({ ...formData, [name]: selcollege ? selcollege.nickname : '' });
+        setFormData({ ...formData, [name]: value });
+        if (name === "college") {
+            const selectedCollege = value;
+            const selectedCollegeObj = colleges.find(college => college.nickname === selectedCollege);
+            if (selectedCollegeObj) {
+                setselectedclpr(selectedCollegeObj.programs);
+                //console.log(selectedclpr.programs);
+            }
+            const isclSelected = !!value; // Convert value to boolean
+            setcollegeSelected(isclSelected);
+        }
+        // // If the selected college is found
+        // if (name === 'college') {
+        // }
+        //console.log(formData.college);
+        setclsl(1);
+    };
+
+
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -94,15 +162,15 @@ const VideoUploadForm = () => {
     };
 
     const verifyVideo = async (event) => {
-        
-        const loading = toast.info("Verifying...", {autoClose:false});
+
+        const loading = toast.info("Verifying...", { autoClose: false });
         event.preventDefault();
         const formDataToSend = new FormData();
         formDataToSend.append('video', formData.video);
 
         try {
             // Send a POST request to the Flask backend
-                const response = await fetch('http://localhost:5000/classify_video', {
+            const response = await fetch('http://localhost:5000/classify_video', {
                 method: 'POST',
                 body: formDataToSend,
             });
@@ -115,24 +183,95 @@ const VideoUploadForm = () => {
                 toast.dismiss(loading);
                 // alert("Your video is study related.");
                 // toast.success("Successfully verified as study related content.", { autoClose: 10000 })
-                toast.success("Verified as Study Content!",{autoClose: 10000})
+                toast.success("Verified as Study Content!", { autoClose: 10000 })
             }
             else {
                 // alert("Your Video is not study Related");
                 toast.dismiss(loading);
-                toast.error("Verified as Non-Study Content!",{autoClose: 10000})
+                toast.error("Verified as Non-Study Content!", { autoClose: 10000 })
             }
             //   } else {
             //     console.error('Error:', response.statusText);
             //   }
         } catch (error) {
             console.error('Error:', error);
-        } 
+        }
     }
+
+
+
+    // const fetchColleges = async () => {
+    //     try {
+    //         const response = await axios.post('http://localhost:3001/colleges'); // Replace with your backend API endpoint
+    //         setColleges(response.data.colleges);
+    //     } catch (error) {
+    //         console.error('Error fetching colleges:', error);
+    //     }
+    // };
+
+    const fetchColleges = () => {
+        axios.post('http://localhost:3001/colleges')
+            .then(response => {
+                //console.log("college here");
+                setColleges(response.data);
+                //console.log(colleges.programs.course);
+            })
+            .catch(error => {
+                console.error('Error fetching colleges:', error);
+            });
+    };
+
+    useEffect(() => {
+        // Fetch colleges when component mounts
+        fetchColleges();
+    }, []);
+
+
+
+    /*useEffect(() => {
+        if (formData.college) {
+            const selectedCollegeObj = colleges.find(college => college.nickname === formData.college);
+            if (selectedCollegeObj) {
+                setselectedclpr(selectedCollegeObj.programs);
+                //console.log(selectedclpr);
+            }
+        }
+    }, [formData.college, colleges]);*/
+
+    useEffect(() => {
+        setCourseSelected(false);
+        //console.log("hell");
+        // Log selectedclpr after it's updated
+    }, [formData.college]);
+
+    useEffect(() => {
+        console.log(selectedclpr); // Log selectedclpr after it's updated
+    }, [selectedclpr]); // Run this effect whenever selectedclpr changes
+
+    useEffect(() => {
+        console.log(branches); // Log selectedclpr after it's updated
+    }, [branches]); // Run this effect whenever selectedclpr changes
+
+    useEffect(() => {
+
+        if (!!(formData.college) || !!(formData.course)) {
+            setgoodsem(false);
+        }
+    }, [formData.college, formData.course]);
+
+    useEffect(() => {
+        // Fetch colleges when component mounts
+        //console.log("thai to che");
+        console.log(isgoodsem);
+    }, [isgoodsem]);
+
+
+
+
 
     return (
         <div style={{ background: 'rgba(0, 0, 0, 0.5)', height: '50rem', display: 'grid', justifyContent: 'center' }}>
-            <div><ToastContainer/></div>
+            <div><ToastContainer /></div>
             <div className='uploadBox' style={{ marginTop: '10%', width: '110%' }}>
                 <div>
                     <form onSubmit={handleSubmit}>
@@ -180,55 +319,86 @@ const VideoUploadForm = () => {
                                 {errors.subject && <div>{errors.subject}</div>}
                             </div>
                             <div className="col-md-6">
+                                {/* <label htmlFor="college">College</label> */}
                                 <label htmlFor="college">College</label>
-                                <input
-                                    type="text"
+                                <select
                                     id="college"
                                     name="college"
-                                    onChange={handleChange}
+                                    onChange={handleChangecl}
                                     value={formData.college}
                                     required
-                                />
+                                >
+                                    <option value="">Select College</option>
+                                    {colleges.map(college => (
+                                        <option key={college._id} value={college.nickname}>{college.name}</option>
+                                    ))}
+                                </select>
                                 {errors.college && <div>{errors.college}</div>}
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-md-6">
                                 <label htmlFor="course">Course</label>
-                                <input
-                                    type="text"
+                                <select
                                     id="course"
                                     name="course"
                                     onChange={handleChange}
                                     value={formData.course}
+                                    disabled={!collegeSelected}
+                                    style={collegeSelected ? {} : { filter: 'blur(2px)', pointerEvents: 'none' }}
                                     required
-                                />
+                                >
+                                    <option value="">Select Course</option>
+                                    {selectedclpr && selectedclpr.map(program => {
+                                        return <option key={program.course} value={program.course}>{program.course}</option>;
+                                        /*console.log("Program:", program);
+                                        return program.courses.map(course => {
+                                            return <option key={course} value={course}>{course}</option>;
+                                        });*/
+                                    })}
+                                </select>
                                 {errors.course && <div>{errors.course}</div>}
                             </div>
                             <div className="col-md-6">
                                 <label htmlFor="branch">Branch</label>
-                                <input
-                                    type="text"
+                                <select
                                     id="branch"
                                     name="branch"
                                     onChange={handleChange}
                                     value={formData.branch}
+                                    disabled={!courseSelected || !collegeSelected} // Disable input if course is not selected
                                     required
-                                />
+                                    style={(courseSelected && collegeSelected) ? {} : { filter: 'blur(2px)', pointerEvents: 'none' }} // Apply inline styles based on courseSelected
+                                >
+                                    <option value="">Select Branch</option>
+                                    {branches && branches.map(br => {
+                                        return <option key={br} value={br}>{br}</option>;
+                                        /*console.log("Program:", program);
+                                        return program.courses.map(course => {
+                                            return <option key={course} value={course}>{course}</option>;
+                                        });*/
+                                    })}
+                                </select>
                                 {errors.branch && <div>{errors.branch}</div>}
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-md-6">
                                 <label htmlFor="semester">Semester</label>
-                                <input
-                                    type="number"
+                                <select
                                     id="semester"
                                     name="semester"
                                     onChange={handleChange}
                                     value={formData.semester}
+                                    disabled={!isgoodsem || !courseSelected || !collegeSelected}
                                     required
-                                />
+                                    style={(isgoodsem && courseSelected && collegeSelected) ? {} : { filter: 'blur(2px)', pointerEvents: 'none' }} // Apply inline styles based on courseSelected
+                                >
+                                    <option value="">Select Semester</option>
+                                    {sems && Array.from({ length: sems }).map((_, index) => (
+                                        <option key={index + 1} value={index + 1}>{index + 1}</option>
+                                    ))}
+                                </select>
                                 {errors.semester && <div>{errors.semester}</div>}
                             </div>
                             <div className="col-md-6">

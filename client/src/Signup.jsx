@@ -5,6 +5,7 @@ import axios from 'axios'
 import Home from "./Home";
 import './home.css';
 import { Link } from 'react-router-dom';
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 
@@ -17,6 +18,7 @@ function Signup() {
     const [currentSem, setCurrentSem] = useState();
     const [password, setPass] = useState();
     const [batchYear, setBatchYear] = useState();
+    const [collegesList, setCollegesList] = useState([]);
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
@@ -43,6 +45,23 @@ function Signup() {
             navigate('/videos')
         }
     }
+
+    const fetchColleges = () => {
+        axios.post('http://localhost:3001/colleges')
+            .then(response => {
+                //console.log("college here");
+                setCollegesList(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching colleges:', error);
+            });
+    };
+
+    useEffect(() => {
+        fetchColleges();
+    }, []);
+
+
 
     return (
         <div>
@@ -103,14 +122,17 @@ function Signup() {
                                                 <div className="col-sm-6">
                                                     <div className="d-flex flex-row align-items-center">
                                                         <i className="fas fa-school me-3" style={{ fontSize: '24px' }}></i>
-                                                        <input
+                                                        <select
                                                             className="form-control"
-                                                            placeholder="College Name"
-                                                            type="text"
                                                             value={college}
                                                             onChange={(e) => setCollege(e.target.value)}
                                                             required
-                                                        />
+                                                        >
+                                                            <option value="">Select College</option>
+                                                            {collegesList.map(college => (
+                                                                <option key={college._id} value={college.name}>{college.name}</option>
+                                                            ))}
+                                                        </select>
                                                     </div>
                                                 </div>
                                                 <div className="col-sm-6">

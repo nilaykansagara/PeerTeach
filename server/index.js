@@ -7,6 +7,7 @@ const UserModel = require('./models/users')
 //const University = require('./models/')
 const Video = require('./models/video')
 const Businessman = require('./models/Businessman')
+const University = require('./models/universities');
 const fs = require('fs')
 const path = require('path')
 
@@ -360,6 +361,18 @@ app.post('/seeVideos', async (req, res) => {
     res.json(videos);
 
 })
+
+app.post('/colleges', async (req, res) => {
+    try {
+        const universities = await University.find({}, '_id name nickname pincode programs total_sems');
+        console.log("college here");
+        res.json(universities);
+    } catch (error) {
+        console.error('Error fetching colleges:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 app.post('/deleteVideos', async (req, res) => {
     console.log("Hello i am manan");
