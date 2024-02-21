@@ -295,8 +295,6 @@ const VideoList = () => {
                             <li class="nav-item">
                                 <a class="nav-link active" style={{ marginTop: '5px', color: '#C8C8C8', fontSize: '17px', }} aria-current="page" href="/videos"><b>Home</b></a>
                             </li>
-
-
                             {
                                 isLoggedIn && (<>
                                     <li class="nav-item">

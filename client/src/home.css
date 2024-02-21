@@ -177,3 +177,18 @@ form button:hover {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   padding: 20px;
 }
+
+.college_btn{
+  background-color: skyblue;
+  color: black;
+  padding : 0.8rem;
+  border: solid 2px black;
+  border-radius: 19px;
+  width:130%;
+}
+
+.college_setup{
+  position: fixed;
+  left: 1.3%;
+
+}

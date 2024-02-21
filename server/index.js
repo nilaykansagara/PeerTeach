@@ -373,6 +373,23 @@ app.post('/colleges', async (req, res) => {
     }
 });
 
+app.post('/nearbycolleges', async (req, res) => {
+    try {
+        const userpin = req.body.userpin;
+        console.log(userpin);
+        const universities = await University.find({}, '_id name nickname pincode programs total_sems');
+        const nearbyuni = universities.filter(colobj => colobj.pincode === userpin);
+        console.log("nearby colleges here");
+        console.log(nearbyuni);
+        res.json(nearbyuni);
+    } catch (error) {
+        console.error('Error fetching colleges:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+
 
 app.post('/deleteVideos', async (req, res) => {
     console.log("Hello i am manan");
