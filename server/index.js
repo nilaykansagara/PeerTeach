@@ -8,6 +8,7 @@ const UserModel = require('./models/users')
 const Video = require('./models/video')
 const Businessman = require('./models/Businessman')
 const University = require('./models/universities');
+const students = require('./models/users');
 const fs = require('fs')
 const path = require('path')
 
@@ -306,12 +307,23 @@ app.post('/register', (req, res) => {
                 UserModel.create(req.body)
                     .then(users => res.json({ users, c }))
                     .catch(err => res.json(err))
+                
             }
+            
         })
         .catch(err => {
             res.status(500).json({ message: 'An error occurred while checking for duplicate emails.' });
         });
 });
+
+app.post('/students', async (req,res)=>{
+    console.log("Hello from students");
+    const {selclg} = req.body;
+    const std = await students.find({}, '_id name email college course branch currentSem batchYear');
+    const clgstd = std.filter(stdobj => stdobj.college === selclg);
+    console.log(clgstd);
+    res.json(clgstd);
+})
 
 app.post('/login', (req, res) => {
     console.log("Hello");
@@ -377,7 +389,7 @@ app.post('/nearbycolleges', async (req, res) => {
     try {
         const userpin = req.body.userpin;
         console.log(userpin);
-        const universities = await University.find({}, '_id name nickname pincode programs total_sems');
+        const universities = await University.find({}, '_id name address nickname pincode programs total_sems');
         const nearbyuni = universities.filter(colobj => colobj.pincode === userpin);
         console.log("nearby colleges here");
         console.log(nearbyuni);

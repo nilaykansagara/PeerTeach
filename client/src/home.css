@@ -190,5 +190,51 @@ form button:hover {
 .college_setup{
   position: fixed;
   left: 1.3%;
+  
+}
 
+.card_style{
+  height: 7rem;
+  border: 2px black solid;
+  border-radius: 20px;
+  margin-left: 0vw;
+  margin-right: 5%;
+  width: 95vw;
+  background-color: gainsboro;
+  margin-bottom: 0.2vw;
+  color: black;
+}
+
+.card_style:hover{
+  background-color: grey;
+  /* background-color: #3F7FDE; */
+}
+
+.clg_icon{
+  font-size: 1.2vw;
+  margin-left: 0.5vw;
+  margin-top: 0.5vw;
+}
+
+.user_icon{
+  font: 1vw;
+  margin-left: 0.5vw;
+  /* background-color: #A0E3DC; */
+  margin-top: 0.7vw;
+}
+
+.busistyle{
+  background-color: #3A81E4;
+}
+
+.busitext{
+  height:17vw;
+  /* background-color: #A3897B;
+   */
+   background-color: #FFE4E1;
+  margin-bottom: 15px;
+  border: 2px black solid;
+  border-radius: 20px;
+  color: black;
+  width: 95vw;
 }

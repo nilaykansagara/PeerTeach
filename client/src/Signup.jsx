@@ -19,6 +19,13 @@ function Signup() {
     const [password, setPass] = useState();
     const [batchYear, setBatchYear] = useState();
     const [collegesList, setCollegesList] = useState([]);
+    const [courseSelected, setCourseSelected] = useState(false);
+    const [collegeSelected, setcollegeSelected] = useState(false);
+    const [selectedclpr, setselectedclpr] = useState(null);
+    const [branches, setBranches] = useState(null);
+    const [isgoodsem, setgoodsem] = useState(false);
+    const [sems, setSems] = useState(null);
+    const [colleges, setColleges] = useState([]);
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
@@ -46,11 +53,81 @@ function Signup() {
         }
     }
 
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+
+        if (college && name === "course") {
+            setCourse(value);
+            const isCourseSelected = !!value; // Convert value to boolean
+            setCourseSelected(isCourseSelected);
+            console.log("hello from course change");
+            const selectedCollegeObj = colleges.find(colleget => colleget.nickname === college);
+            //console.log(selectedCollegeObj);
+            if (selectedCollegeObj) {
+                const selectedProgram = selectedCollegeObj.programs.find(obj => obj.course === value);
+                console.log(selectedProgram);
+                if (selectedProgram) {
+                    setBranches(selectedProgram.branches);
+                    console.log("hello branches");
+                    console.log(branches);
+                }
+            }
+        }
+
+        if (college && course && name === "branch") {
+            setBranch(value);
+            const isbranchSelectedtemp = !!value; // Convert value to boolean
+            setgoodsem(isbranchSelectedtemp);
+            console.log("hello from branch change");
+            const selectedCollegeObj = colleges.find(colleget => colleget.nickname === college);
+            //console.log(selectedCollegeObj);
+            if (selectedCollegeObj) {
+                const selectedProgram = selectedCollegeObj.programs.find(obj => obj.course === course);
+                console.log("hello from branch change");
+                console.log(selectedProgram.total_sems);
+                //console.log(selectedProgram);
+                if (selectedProgram) {
+                    setSems(selectedProgram.total_sems);
+                }
+            }
+        }
+    };
+
+    const handleChangecl = (event) => {
+        const { name, value } = event.target;
+        console.log(value);
+
+        //const selcollege = colleges.find((tcollege) => tcollege._id === value);
+        //console.log(selcollege);
+        //setFormData({ ...formData, [name]: selcollege ? selcollege.nickname : '' });
+        //setFormData({ ...formData, [name]: value });
+        setCollege(value);
+
+        if (name === "college") {
+            console.log("Hello from signup DD");
+            const selectedCollege = value;
+            const selectedCollegeObj = colleges.find(college => college.nickname === selectedCollege);
+            if (selectedCollegeObj) {
+                setselectedclpr(selectedCollegeObj.programs);
+                //console.log(selectedclpr.programs);
+            }
+            const isclSelected = !!value; // Convert value to boolean
+            setcollegeSelected(isclSelected);
+        }
+        // // If the selected college is found
+        // if (name === 'college') {
+        // }
+        //console.log(formData.college);
+        //setclsl(1);
+    };
+
+
     const fetchColleges = () => {
         axios.post('http://localhost:3001/colleges')
             .then(response => {
                 //console.log("college here");
-                setCollegesList(response.data);
+                setColleges(response.data);
+                console.log(response.data);
             })
             .catch(error => {
                 console.error('Error fetching colleges:', error);
@@ -119,62 +196,84 @@ function Signup() {
                                                 </div>
                                             </div>
                                             <div className="row">
-                                                <div className="col-sm-6">
-                                                    <div className="d-flex flex-row align-items-center">
-                                                        <i className="fas fa-school me-3" style={{ fontSize: '24px' }}></i>
-                                                        <select
-                                                            className="form-control"
-                                                            value={college}
-                                                            onChange={(e) => setCollege(e.target.value)}
-                                                            required
-                                                        >
-                                                            <option value="">Select College</option>
-                                                            {collegesList.map(college => (
-                                                                <option key={college._id} value={college.name}>{college.name}</option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
+                                                <div className="col-md-6">
+                                                    {/* <label htmlFor="college">College</label> */}
+                                                    <select
+                                                        id="college"
+                                                        name="college"
+                                                        onChange={handleChangecl}
+                                                        value={college}
+                                                        required
+                                                    >
+                                                        <option value="">Select College</option>
+                                                        {colleges.map(college => (
+                                                            <option key={college._id} value={college.name}>{college.name}</option>
+                                                        ))}
+                                                    </select>
+                                                    {/* {errors.college && <div>{errors.college}</div>} */}
                                                 </div>
-                                                <div className="col-sm-6">
-                                                    <div className="d-flex flex-row align-items-center">
-                                                        <i className="fas fa-graduation-cap me-3" style={{ fontSize: '24px' }}></i>
-                                                        <input
-                                                            className="form-control"
-                                                            placeholder="Course Name"
-                                                            type="text"
-                                                            value={course}
-                                                            onChange={(e) => setCourse(e.target.value)}
-                                                            required
-                                                        />
-                                                    </div>
+                                                <div className="col-md-6">
+                                                    {/* <label htmlFor="course">Course</label> */}
+                                                    <select
+                                                        id="course"
+                                                        name="course"
+                                                        onChange={handleChange}
+                                                        value={course}
+                                                        disabled={!collegeSelected}
+                                                        style={collegeSelected ? {} : { filter: 'blur(2px)', pointerEvents: 'none' }}
+                                                        required
+                                                    >
+                                                        <option value="">Select Course</option>
+                                                        {selectedclpr && selectedclpr.map(program => {
+                                                            return <option key={program.course} value={program.course}>{program.course}</option>;
+                                                            /*console.log("Program:", program);
+                                                            return program.courses.map(course => {
+                                                                return <option key={course} value={course}>{course}</option>;
+                                                            });*/
+                                                        })}
+                                                    </select>
+                                                    {/* {errors.course && <div>{errors.course}</div>} */}
                                                 </div>
                                             </div>
                                             <div className="row">
-                                                <div className="col-sm-6">
-                                                    <div className="d-flex flex-row align-items-center">
-                                                        <i className="fas fa-code-branch me-3" style={{ fontSize: '24px' }}></i>
-                                                        <input
-                                                            className="form-control"
-                                                            placeholder="Branch Name"
-                                                            type="text"
-                                                            value={branch}
-                                                            onChange={(e) => setBranch(e.target.value)}
-                                                            required
-                                                        />
-                                                    </div>
+                                                <div className="col-md-6">
+                                                    {/* <label htmlFor="branch">Branch</label> */}
+                                                    <select
+                                                        id="branch"
+                                                        name="branch"
+                                                        onChange={handleChange}
+                                                        value={branch}
+                                                        disabled={!courseSelected || !collegeSelected} // Disable input if course is not selected
+                                                        required
+                                                        style={(courseSelected && collegeSelected) ? {} : { filter: 'blur(2px)', pointerEvents: 'none' }} // Apply inline styles based on courseSelected
+                                                    >
+                                                        <option value="">Select Branch</option>
+                                                        {branches && branches.map(br => {
+                                                            return <option key={br} value={br}>{br}</option>;
+                                                            /*console.log("Program:", program);
+                                                            return program.courses.map(course => {
+                                                                return <option key={course} value={course}>{course}</option>;
+                                                            });*/
+                                                        })}
+                                                    </select>
                                                 </div>
-                                                <div className="col-sm-6">
-                                                    <div className="d-flex flex-row align-items-center">
-                                                        <i className="fas fa-graduation-cap me-3" style={{ fontSize: '24px' }}></i>
-                                                        <input
-                                                            className="form-control"
-                                                            placeholder="Current Semester"
-                                                            type="number"
-                                                            value={currentSem}
-                                                            onChange={(e) => setCurrentSem(e.target.value)}
-                                                            required
-                                                        />
-                                                    </div>
+                                                <div className="col-md-6">
+                                                    {/* <label htmlFor="semester">Semester</label> */}
+                                                    <select
+                                                        id="semester"
+                                                        name="semester"
+                                                        onChange={(e) => setCurrentSem(e.target.value)}
+                                                        value={currentSem}
+                                                        disabled={!isgoodsem || !courseSelected || !collegeSelected}
+                                                        required
+                                                        style={(isgoodsem && courseSelected && collegeSelected) ? {} : { filter: 'blur(2px)', pointerEvents: 'none' }} // Apply inline styles based on courseSelected
+                                                    >
+                                                        <option value="">Select Semester</option>
+                                                        {sems && Array.from({ length: sems }).map((_, index) => (
+                                                            <option key={index + 1} value={index + 1}>{index + 1}</option>
+                                                        ))}
+                                                    </select>
+                                                    {/* {errors.semester && <div>{errors.semester}</div>} */}
                                                 </div>
                                             </div>
                                             <div className="row">
