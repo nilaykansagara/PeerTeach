@@ -307,18 +307,18 @@ app.post('/register', (req, res) => {
                 UserModel.create(req.body)
                     .then(users => res.json({ users, c }))
                     .catch(err => res.json(err))
-                
+
             }
-            
+
         })
         .catch(err => {
             res.status(500).json({ message: 'An error occurred while checking for duplicate emails.' });
         });
 });
 
-app.post('/students', async (req,res)=>{
+app.post('/students', async (req, res) => {
     console.log("Hello from students");
-    const {selclg} = req.body;
+    const { selclg } = req.body;
     const std = await students.find({}, '_id name email college course branch currentSem batchYear');
     const clgstd = std.filter(stdobj => stdobj.college === selclg);
     console.log(clgstd);
@@ -376,7 +376,7 @@ app.post('/seeVideos', async (req, res) => {
 
 app.post('/colleges', async (req, res) => {
     try {
-        const universities = await University.find({}, '_id name nickname pincode programs total_sems');
+        const universities = await University.find({}, '_id name nickname pincode programs total_sems address');
         console.log("college here");
         res.json(universities);
     } catch (error) {

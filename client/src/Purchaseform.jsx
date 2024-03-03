@@ -4,6 +4,7 @@ import { Input } from '@chakra-ui/react';
 import { FormControl, FormLabel } from '@chakra-ui/react';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton } from '@chakra-ui/react';
 import { Button } from '@chakra-ui/react';
+import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {
     Drawer,
@@ -15,9 +16,19 @@ import {
     DrawerCloseButton,
 } from '@chakra-ui/react'
 
+
+
 function Purchaseform() {
+    let ctemp = localStorage.getItem('selectedCollege');
+    let sctemp = localStorage.getItem('slclStudents');
+    const selectedCollege = JSON.parse(ctemp);
+    const slclStudents = JSON.parse(sctemp);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const btnRef = React.useRef();
+    const navigate = useNavigate();
+    const homeClicked = () => {
+        navigate('/BusinessmanHome');
+    }
 
     return (
         <>
@@ -40,7 +51,7 @@ function Purchaseform() {
                         <div className="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                                 <li className="nav-item">
-                                    <a className="nav-link active" style={{ marginTop: '5px', color: '#C8C8C8', fontSize: '17px', }} aria-current="page" href="/BusinessmanHome"><b>Home</b></a>
+                                    <a className="nav-link active" style={{ marginTop: '5px', color: '#C8C8C8', fontSize: '17px', cursor: 'pointer' }} aria-current="page" onClick={homeClicked}><b>Home</b></a>
                                 </li>
                                 <li className="nav-item">
                                     <a className="nav-link active" style={{ marginTop: '5px', color: '#C8C8C8', fontSize: '17px', cursor: 'pointer' }} aria-current="page" onClick={onOpen}><b>Help</b></a>
@@ -50,6 +61,18 @@ function Purchaseform() {
                         </div>
                     </div>
                 </nav>
+            </div>
+
+            <div style={{ marginLeft: '1.5%' }}>
+                <p>
+                    You select <b>{selectedCollege.name}</b> to give advertisement which have total <b>{slclStudents}</b> registered student on Peerteach. Fill the below form to generate invoice for cost that you need to pay for advertisement
+                </p>
+                <p>
+                    for cost and other for other plan please click on <b>Help</b>.
+                </p>
+                <p>
+                    <b>Note: </b>here add will be run only for a day and if there is exam time add will be run bases on hour with different cost.
+                </p>
             </div>
             <div style={{ display: 'flex' }}>
                 <div style={{ marginLeft: '1.3%', width: '30%', border: '2px solid black', borderRadius: '30px', backgroundColor: '#d9f0f4' }}>
@@ -106,6 +129,10 @@ function Purchaseform() {
                     >
                         <DrawerBody style={{ textAlign: 'center' }}>
                             <div style={{ padding: '5%' }}>
+                                {slclStudents}
+                                <br />
+                                {selectedCollege.name}
+                                <br />
                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id. Semper quis lectus nulla at volutpat diam ut venenatis. Dolor morbi non arcu risus quis varius quam quisque. Massa ultricies mi quis hendrerit dolor magna eget est lorem. Erat imperdiet sed euismod nisi porta. Lectus vestibulum mattis ullamcorper velit.
                             </div>
                             <Button

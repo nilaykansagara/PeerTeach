@@ -194,6 +194,7 @@ form button:hover {
 }
 
 .card_style{
+  text-align: left;
   height: 7rem;
   border: 2px black solid;
   border-radius: 20px;
