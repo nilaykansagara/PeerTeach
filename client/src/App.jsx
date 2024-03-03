@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import { ChakraProvider } from '@chakra-ui/react';
 import Signup from './Signup'
 import Login from './Login'
 import Home from './Home'
@@ -12,6 +13,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import BusinessmanHome from './BusinessmanHome';
 import Businesslogin from './B_login';
 import Businesssignup from './B_signup';
+import Purchaseform from './Purchaseform';
+
 
 
 function App() {
@@ -30,7 +33,8 @@ function App() {
         <Route path="/videos/:id" element={<VideoPlayer />} />
         <Route path="/BusinessmanHome" element={<BusinessmanHome />} />
         <Route path="/Busilogin" element={<Businesslogin />} />
-        <Route path="/Busisignup" element={<Businesssignup />} /> 
+        <Route path="/Busisignup" element={<Businesssignup />} />
+        <Route path="/purchaseform" element={<Purchaseform />} />
       </Routes>
     </BrowserRouter>
   )

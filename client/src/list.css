@@ -130,3 +130,15 @@
     display: flex;
     justify-content: center;
   }
+
+.invoice-button {
+    border: 2px solid black;
+    background-color: #FFF8DC;
+    border-radius: 9px;
+    transition: background-color 0.3s;
+}
+
+.invoice-button:hover {
+  background-color: #b8884e;
+    color: white; /* Optionally change text color */
+}
