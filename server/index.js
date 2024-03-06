@@ -10,7 +10,8 @@ const Businessman = require('./models/Businessman')
 const University = require('./models/universities');
 const students = require('./models/users');
 const fs = require('fs')
-const path = require('path')
+const path = require('path');
+const { request } = require("http");
 
 app.use(express.json())
 app.use(cors())
@@ -641,7 +642,75 @@ app.post('/busilogin', (req, res) => {
             }
         }
     )
-})
+});
+
+app.post('/findAdVideos', async (req, res) => {
+    const { selectedCollege, slclStudents } = req.body;
+
+    const students = await UserModel.find({
+        college: selectedCollege.name
+    })
+
+    console.log(students);
+
+    const topStudents = [];
+    const batchStudents = [];
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1;
+    let even = 2;
+    let odd = 1;
+    for (const program of selectedCollege.programs) {
+        for (const branch of program.branches) {
+            for (const sem of program.totalsems / 2) {
+                 // getMonth() returns a zero-based index, so we add 1 to get the current month
+                // console.log("Current month:", currentMonth);
+
+                if(month > 6)
+                {
+                    const students = await UserModel.find({
+                        branch: branch,
+                        currentSem: even,
+                        course: program.course,
+                    })
+                    let max_avg = 0;
+                    let email1, email2;
+                    for(const student of students)
+                    {
+                        let vc = 0;
+                        const videos = await Video.find({
+                            email:student.email,
+                        })
+                        let ln = videos.length;
+                        for(const video of videos)
+                        {
+                            vc += video.views_cnt;
+                        }
+
+                        vc = vc / ln;
+                        if(max_avg < vc)
+                        {
+                            max_avg = vc;
+                            email = student.email;
+                        }
+                    }
+
+                    const decvideos = await Video.find({
+                        email:email
+                    }).sort(-1);
+                    
+                }
+                else {
+
+                }
+            }
+        }
+    }
+
+    return res.json({
+        message: "from findAdVideos",
+        clgname: selectedCollege.name,
+    })
+});
 
 
 

@@ -9,6 +9,7 @@ import { Button } from '@chakra-ui/react';
 import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
 
 import {
     Drawer,
@@ -36,7 +37,19 @@ function Purchaseform() {
     const homeClicked = () => {
         navigate('/BusinessmanHome');
     }
-
+    const invoiceClicked = () => {
+        
+        axios.post('http://localhost:3001/findAdVideos', {selectedCollege, slclStudents}).then(
+            (response) => {
+                console.log(response);
+            }
+        )
+        .catch((error) => {
+            console.log("here in added error");
+            alert('Video is already in watch later list');
+            console.error('Error adding video to watch later list', error);
+        });
+    };
 
     return (
         <>
@@ -142,7 +155,7 @@ function Purchaseform() {
                                     </select>
                                 </div>
                                 <div className="ci">
-                                    <button className='invoice-button' variant='ghost'>
+                                    <button className='invoice-button' variant='ghost' onClick={invoiceClicked}>
                                         Create Invoice
                                     </button>
                                 </div>
