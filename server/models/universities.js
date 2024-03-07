@@ -28,6 +28,14 @@ const UniversitySchema = new mongoose.Schema({
             required: true
         }]
 
+    }],
+    businessman_queue:[{
+        busi_email:{
+            type:String,
+        },
+        alotted_date:{
+            type:Date,
+        }
     }]
 
 });

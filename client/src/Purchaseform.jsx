@@ -38,8 +38,9 @@ function Purchaseform() {
         navigate('/BusinessmanHome');
     }
     const invoiceClicked = () => {
-        
-        axios.post('http://localhost:3001/findAdVideos', {selectedCollege, slclStudents}).then(
+        const buserData = localStorage.getItem("buserdata");
+        const bdata = JSON.parse(buserData);
+        axios.post('http://localhost:3001/addBill', {selectedCollege, slclStudents, }).then(
             (response) => {
                 console.log(response);
             }

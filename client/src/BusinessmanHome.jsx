@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBuildingColumns, faUsers, faLocation } from '@fortawesome/free-solid-svg-icons';
+import { FaVideo, FaUserFriends, FaBullhorn } from 'react-icons/fa';
 
 const BusinessmanHome = () => {
     const navigate = useNavigate();
@@ -13,6 +14,71 @@ const BusinessmanHome = () => {
     const [viewcolleges, setViewColleges] = useState(false);
     const [students, setStudents] = useState([]);
     const [count, setCount] = useState(null);
+
+    const bannerStyle = {
+        background: 'linear-gradient(135deg, #ff6ec4, #7873f5)',
+        padding: '60px 20px',
+        borderRadius: '10px',
+        textAlign: 'center',
+        color: '#fff',
+        width: 'calc(100% - 40px)',
+        margin: '10px auto',
+        position: 'relative',
+        marginTop: '-2px'
+    };
+
+    const buttonStyle = {
+        backgroundColor: '#fff',
+        color: '#7873f5',
+        padding: '12px 24px',
+        border: 'none',
+        borderRadius: '5px',
+        fontSize: '18px',
+        cursor: 'pointer',
+        marginTop: '10px',
+    };
+
+    const featureStyle = {
+
+        textAlign: 'center',
+        margin: '50px auto',
+        padding: '20px',
+        maxWidth: '800px',
+        // marginTop: viewcolleges ? '10vw' : '0px'
+    };
+
+    // const featureStyle = {
+    //     color: 'white',
+    //     background: 'linear-gradient(135deg, #ff6ec4, #7873f5)',
+    //     padding: '50px 20px',
+    //     textAlign: 'center',
+    //     color: '#fff',
+    //     margin: '50px auto',
+    //     maxWidth: '800px',
+    //     borderRadius: '10px',
+    //     boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+    //     marginTop: viewcolleges ? '2vw' : '50px',
+    //     width: '100%',
+    // };
+
+    const iconStyle = {
+        fontSize: '50px',
+        color: '#ff6ec4',
+        marginBottom: '20px',
+    };
+
+    const titleStyle = {
+        fontSize: '24px',
+        fontWeight: 'bold',
+        color: '#7873f5',
+        marginBottom: '10px',
+    };
+
+    const descriptionStyle = {
+        fontSize: '18px',
+        color: '#333',
+        lineHeight: '1.5',
+    };
 
     const Logout = () => {
         alert('Successfully Logged Out.');
@@ -110,29 +176,50 @@ const BusinessmanHome = () => {
                         </div>
                     </div>
                 </nav>
-                <div className='busistyle'>
-                    <div className='college_setup'>
-                        <div className='busitext'>
-                            <h4 style={{ marginLeft: '15px', marginTop: '10px' }}>Welcome,</h4>
-                            <p style={{ marginLeft: '30px', marginTop: '10px' }}>- You can sponsor any video of students of our site and can advertise your service. </p>
-                            <p style={{ marginLeft: '30px', marginTop: '10px' }}>Pricing scheme:
-                                <li>Regular day: 1000rs for covering college that has a range of 100 to 200 students registered</li>
-                                <li>Exam time: 2000rs for covering college that has 100 to 200 students registered.</li>
-                            </p>
-                            <button style={{ marginLeft: '30px', marginTop: '5px', backgroundColor: 'lightgreen', padding: '8px', borderRadius: '15px' }} onClick={viewColleges}>View colleges</button>
+
+
+                <div style={bannerStyle}>
+                    <h1>Welcome to Our Business Page</h1>
+                    <p>Reach your target audience effectively by placing ads on student videos.</p>
+                    <p>Tap into the dynamic student community and boost your brand's visibility.</p>
+                    <button style={buttonStyle} onClick={viewColleges}>Get Colleges!</button>
+                </div>
+
+                {viewcolleges && nearbycolleges.map((college, index) => (
+                    <div className="nav-item" key={index}>
+                        <button className='card_style' onClick={() => collegeClicked(college._id)}>
+                            <div className='clg_icon'><FontAwesomeIcon icon={faBuildingColumns} />&nbsp; {college.name}</div>
+                            <div className='user_icon' ><FontAwesomeIcon icon={faUsers} /> &nbsp;{students.find(student => student.college === college.name)?.count}</div>
+                            <div className='user_icon'><FontAwesomeIcon icon={faLocation} /> &nbsp;{college.address}, {college.pincode}</div>
+                        </button>
+                    </div>
+                ))}
+
+                <div style={{ ...featureStyle, marginTop: viewcolleges ? '2vw' : '50px' }}>
+                    <h2 style={{ textAlign: 'center', color: '#7873f5', marginBottom: '30px' }}>Features</h2>
+
+                    <div>
+                        <FaBullhorn style={iconStyle} />
+                        <h2 style={titleStyle}>Boost Brand Awareness</h2>
+                        <p style={descriptionStyle}>Increase brand recognition and awareness by promoting your services through student-generated content. Stand out in a crowded market and attract more customers.</p>
+                    </div>
+                    <div style={{ display: 'flex', marginTop: '5vw' }}>
+                        <div >
+                            <FaVideo style={iconStyle} />
+                            <h2 style={titleStyle}>Advertise in Student Videos</h2>
+                            <p style={descriptionStyle}>Reach your target audience by placing ads in videos created by students. Connect with a diverse audience through engaging content.</p>
                         </div>
-                        {viewcolleges && nearbycolleges.map((college, index) => (
-                            <div className="nav-item" key={index}>
-                                <button className='card_style' onClick={() => collegeClicked(college._id)}>
-                                    <div className='clg_icon'><FontAwesomeIcon icon={faBuildingColumns} />&nbsp; {college.name}</div>
-                                    <div className='user_icon' ><FontAwesomeIcon icon={faUsers} /> &nbsp;{students.find(student => student.college === college.name)?.count}</div>
-                                    <div className='user_icon'><FontAwesomeIcon icon={faLocation} /> &nbsp;{college.address}, {college.pincode}</div>
-                                </button>
-                            </div>
-                        ))}
+                        <div style={{ marginRight: '5vw' }}>
+                            <FaUserFriends style={iconStyle} />
+                            <h2 style={titleStyle}>Expand Your Reach</h2>
+                            <p style={descriptionStyle}>Tap into the dynamic student community and increase brand visibility. Connect with potential customers and expand your market reach.</p>
+                        </div>
+
                     </div>
                 </div>
+
             </div>
+
         </>
     )
 }

@@ -9,6 +9,8 @@ const Video = require('./models/video')
 const Businessman = require('./models/Businessman')
 const University = require('./models/universities');
 const students = require('./models/users');
+const AdModel = require('./models/ad');
+const BillModel = require('./models/bill');
 const fs = require('fs')
 const path = require('path');
 const { request } = require("http");
@@ -644,8 +646,12 @@ app.post('/busilogin', (req, res) => {
     )
 });
 
+app.post('/addBill', async (req, res) => {
+    // const {}
+})
+
 app.post('/findAdVideos', async (req, res) => {
-    const { selectedCollege, slclStudents } = req.body;
+    const { selectedCollege, slclStudents, email, slots } = req.body;
 
     const students = await UserModel.find({
         college: selectedCollege.name
@@ -653,8 +659,7 @@ app.post('/findAdVideos', async (req, res) => {
 
     console.log(students);
 
-    const topStudents = [];
-    const batchStudents = [];
+    const total_videos = [];
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth() + 1;
     let even = 2;
@@ -672,7 +677,7 @@ app.post('/findAdVideos', async (req, res) => {
                         currentSem: even,
                         course: program.course,
                     })
-                    let max_avg = 0;
+                    let max_avg = 0, sec_max = 0;
                     let email1, email2;
                     for(const student of students)
                     {
@@ -689,22 +694,121 @@ app.post('/findAdVideos', async (req, res) => {
                         vc = vc / ln;
                         if(max_avg < vc)
                         {
+                            sec_max = max_avg;
                             max_avg = vc;
-                            email = student.email;
+                            email2 = email1;
+                            email1 = student.email;
+                        }
+                        else{
+                            if(sec_max<vc){
+                                sec_max = vc;
+                                email2 = student.email;
+                            }
                         }
                     }
 
-                    const decvideos = await Video.find({
-                        email:email
-                    }).sort(-1);
+                    const decvideos1 = await Video.find({
+                        email:email1
+                    }).sort({ _id: -1 });
+
+
+                    const decvideos2 = await Video.find({
+                        email:email2
+                    }).sort({ _id: -1 });
                     
+                    for(let i = 0; i < slots; i++)
+                    {
+                        if(i < decvideos1.length)
+                        {
+                            total_videos.push(decvideos1[i]);
+                        }
+                        if(i < decvideos2.length)
+                        {
+                            total_videos.push(decvideos2[i]);
+                        }
+                    }
+
+                    even+=2;
                 }
                 else {
+                    const students = await UserModel.find({
+                        branch: branch,
+                        currentSem: odd,
+                        course: program.course,
+                    })
+                    let max_avg = 0, sec_max = 0;
+                    let email1, email2;
+                    for(const student of students)
+                    {
+                        let vc = 0;
+                        const videos = await Video.find({
+                            email:student.email,
+                        })
+                        let ln = videos.length;
+                        for(const video of videos)
+                        {
+                            vc += video.views_cnt;
+                        }
 
+                        vc = vc / ln;
+                        if(max_avg < vc)
+                        {
+                            sec_max = max_avg;
+                            max_avg = vc;
+                            email2 = email1;
+                            email1 = student.email;
+                        }
+                        else{
+                            if(sec_max<vc){
+                                sec_max = vc;
+                                email2 = student.email;
+                            }
+                        }
+                    }
+
+                    const decvideos1 = await Video.find({
+                        email:email1
+                    }).sort({ _id: -1 });
+
+                    const decvideos2 = await Video.find({
+                        email:email2
+                    }).sort({ _id: -1 });
+
+                    for(let i = 0; i < slots; i++)
+                    {
+                        if(i < decvideos1.length)
+                        {
+                            total_videos.push(decvideos1[i]);
+                        }
+                        if(i < decvideos2.length)
+                        {
+                            total_videos.push(decvideos2[i]);
+                        }
+                    }
+                    
+                    odd+=2;
                 }
+                
             }
         }
     }
+
+    const ad = AdModel.findOne({
+        Businessman_email: email,
+        run_flag:0,
+    });
+
+    
+
+    for(const video of total_videos)
+    {
+        video.ad_id = null;
+        video.ad_id = ad._id;
+
+    }
+
+
+
 
     return res.json({
         message: "from findAdVideos",

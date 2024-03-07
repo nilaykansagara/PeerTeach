@@ -200,10 +200,12 @@ form button:hover {
   border-radius: 20px;
   margin-left: 0vw;
   margin-right: 5%;
-  width: 95vw;
+  width: 97vw;
   background-color: gainsboro;
   margin-bottom: 0.2vw;
   color: black;
+  margin-left: 1.3vw;
+
 }
 
 .card_style:hover{
@@ -220,13 +222,13 @@ form button:hover {
 .user_icon{
   font: 1vw;
   margin-left: 0.5vw;
-  /* background-color: #A0E3DC; */
+  /* background-color: #A0E3DC;  */
   margin-top: 0.7vw;
 }
 
-.busistyle{
+/* .busistyle{
   background-color: #3A81E4;
-}
+} */
 
 .busitext{
   height:17vw;
@@ -239,3 +241,33 @@ form button:hover {
   color: black;
   width: 95vw;
 }
+
+
+.college-list-container {
+  position: absolute;
+  top: 0;
+  right: -100%;
+  transition: right 0.5s ease; /* Adding sliding animation */
+  background-color: #f7f7f7; /* Light background color */
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Adding shadow */
+  padding: 20px;
+}
+
+.college-list-container.show {
+  right: 0;
+}
+
+/* .card_style {
+  background-color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.clg_icon, .user_icon {
+  margin-bottom: 5px;
+  font-size: 16px;
+  color: #333;
+} */

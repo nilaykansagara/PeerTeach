@@ -74,7 +74,10 @@ const videoSchema = new mongoose.Schema({
     views_cnt: {
         type: Number,
         default: 0,
-    }
+    },
+    ad_id:{
+      type:String, 
+    },
 });
 
 const videoModel = mongoose.model("video", videoSchema);
