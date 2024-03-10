@@ -16,10 +16,10 @@ const UniversitySchema = new mongoose.Schema({
         type: String
     },
     programs: [{
-        courses: [{
+        course: {
             type: String,
             required: true
-        }],
+        },
         branches: [{
             type: String
         }],
@@ -29,12 +29,12 @@ const UniversitySchema = new mongoose.Schema({
         }]
 
     }],
-    businessman_queue:[{
-        busi_email:{
-            type:String,
+    businessman_queue: [{
+        busi_email: {
+            type: String,
         },
-        alotted_date:{
-            type:Date,
+        alotted_date: {
+            type: Date,
         }
     }]
 

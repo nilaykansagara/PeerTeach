@@ -146,6 +146,9 @@ const VideoUploadForm = () => {
             formDataToSend.append('notes', formData.notes);
             formDataToSend.append('batch', userData.batchYear);
 
+            console.log("Video file object checking");
+            console.log(formData.video);
+
             // Send the formData to your server using a POST request
 
             console.log("Hello");

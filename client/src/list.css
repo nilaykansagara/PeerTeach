@@ -138,6 +138,14 @@
     transition: background-color 0.3s;
 }
 
+.select-button {
+  border:  #0CAFFF;
+  background-color: #0CAFFF;
+  border-radius: 7px;
+  height: 30px;
+  width:100px;
+}
+
 .invoice-button:hover {
   background-color: #b8884e;
     color: white; /* Optionally change text color */

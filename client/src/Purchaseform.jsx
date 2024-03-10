@@ -1,12 +1,12 @@
 import React from 'react';
 import Carousel from 'react-bootstrap/Carousel';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
 import { Input } from '@chakra-ui/react';
 import { FormControl, FormLabel } from '@chakra-ui/react';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton } from '@chakra-ui/react';
 import { Button } from '@chakra-ui/react';
-import { useNavigate } from "react-router-dom";
+import { Form, useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
@@ -20,7 +20,7 @@ import {
     DrawerContent,
     DrawerCloseButton,
 } from '@chakra-ui/react'
-import { faTimeline, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimeline, faTimes, faUpload } from '@fortawesome/free-solid-svg-icons';
 
 
 
@@ -30,27 +30,113 @@ function Purchaseform() {
     const selectedCollege = JSON.parse(ctemp);
     const slclStudents = JSON.parse(sctemp);
     const [flag, setFlag] = useState(0);
+    const [allotDate, setallotDate] = useState(0);
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [proceedClick, setproceedClick] = useState(0);
+    const [formData, setFormData] = useState({
+        slots: '',
+        secs: 4,
+        ad: '',
+        purchase_date: '',
+        busi_name: '',
+        busi_email: '',
+        college_name: '',
+        college_users: '',
+        bill_amount: 0
+    });
+
+    const [filename, setFilename] = useState('');
+    const fileInputRef = useRef(null);
+
 
     const btnRef = React.useRef();
     const navigate = useNavigate();
     const homeClicked = () => {
         navigate('/BusinessmanHome');
     }
-    const invoiceClicked = () => {
-        const buserData = localStorage.getItem("buserdata");
-        const bdata = JSON.parse(buserData);
-        axios.post('http://localhost:3001/addBill', {selectedCollege, slclStudents, }).then(
-            (response) => {
-                console.log(response);
-            }
-        )
-        .catch((error) => {
-            console.log("here in added error");
-            alert('Video is already in watch later list');
-            console.error('Error adding video to watch later list', error);
-        });
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        if (name === "secs") {
+            // Convert value to number before setting in state
+            setFormData({ ...formData, [name]: parseInt(value) });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
+    }
+
+
+    const handleFileChange = () => {
+        const file = fileInputRef.current.files[0];
+        if (file) {
+            console.log("File selected:", file);
+            setFormData(prevFormData => ({ ...prevFormData, ad: file }));
+            setFilename(file.name);
+        } else {
+            console.log("No file selected.");
+        }
     };
+
+
+    const invoiceClicked = () => {
+        console.log("hello from add bill");
+        const buserData = localStorage.getItem("buserData");
+        const bdata = JSON.parse(buserData);
+        let today = new Date();
+        console.log("printing today date");
+        console.log(today);
+
+        const updatedFormData = {
+            ...formData,
+            busi_email: bdata.email,
+            busi_name: bdata.owner_name,
+            college_name: selectedCollege.name,
+            college_users: slclStudents,
+            purchase_date: today
+        };
+
+        setFormData(updatedFormData);
+    };
+
+    const proceedClicked = () => {
+        const formDataToSend = new FormData();
+        formDataToSend.append('slots', formData.slots);
+        formDataToSend.append('secs', formData.secs);
+        formDataToSend.append('ad', formData.ad);
+        formDataToSend.append('purchase_date', formData.purchase_date);
+        formDataToSend.append('busi_name', formData.busi_name);
+        formDataToSend.append('busi_email', formData.busi_email);
+        formDataToSend.append('college_name', formData.college_name);
+        formDataToSend.append('college_users', formData.college_users);
+        formDataToSend.append('bill_amount', formData.bill_amount);
+
+
+        axios.post('http://localhost:3001/addBill', formDataToSend)
+            .then((response) => {
+                console.log(response.data);
+                setproceedClick(1);
+                setallotDate(response.data);
+            })
+            .catch((error) => {
+                console.log("Error:", error);
+                alert('Error creating invoice. Please try again.');
+            });
+    };
+
+    useEffect(() => {
+        if (formData.purchase_date) {
+            axios.post('http://localhost:3001/createBill', { formData })
+                .then((response) => {
+                    console.log(response);
+                    setFormData({ ...formData, bill_amount: parseInt(response.data) });
+                    console.log(formData.bill_amount);
+                })
+                .catch((error) => {
+                    console.log("Error:", error);
+                    alert('Error creating invoice. Please try again.');
+                });
+        }
+    }, [formData.purchase_date]);
 
     return (
         <>
@@ -133,27 +219,52 @@ function Purchaseform() {
                     </div>
                 </Carousel.Item>
                 <Carousel.Item>
-                    <div >
+                    <div style={{ display: 'flex' }}>
                         <div style={{ marginLeft: '5%', width: '35%', height: '350px', border: '2px solid black', borderRadius: '30px', backgroundColor: '#d9f0f4' }}>
                             <FormControl style={{ padding: '4% 8% 4% 8%' }}>
                                 <div style={{ marginBottom: '9%' }}>
                                     <p><b>Number of Students per Semester</b></p>
-                                    <Input type='number' placeholder='between 1 and 3' />
+                                    <Input
+                                        id='slots'
+                                        name="slots"
+                                        onChange={handleChange}
+                                        value={formData.slots}
+                                        type='number'
+                                        placeholder='between 1 and 3'
+                                        required />
                                 </div>
-                                <div style={{ marginBottom: '9%' }}>
-                                    <FormLabel><b>Upload Image or Video</b></FormLabel>
-                                    <Input type='file' accept='image/*, video/*' />
-                                </div>
+
                                 <div style={{ marginBottom: '9%' }}>
                                     <FormLabel><b>Select Duration (in seconds)</b></FormLabel>
-                                    <select id="durationSelect" name="durationSelect">
+                                    <select
+                                        id="durationSelect"
+                                        name="secs"
+                                        onChange={handleChange}
+                                        value={formData.secs}
+                                        type='number'
+                                        required
+                                    >
                                         <option value="4">4 seconds</option>
                                         <option value="5">5 seconds</option>
                                         <option value="10">10 seconds</option>
                                         <option value="20">20 seconds</option>
                                         <option value="30">30 seconds</option>
                                         <option value="60">60 seconds</option>
+
                                     </select>
+                                </div>
+                                <div style={{ marginBottom: '9%' }}>
+                                    <FormLabel><b>Upload Image or Video</b></FormLabel>
+                                    <input
+                                        name='ad'
+                                        ref={fileInputRef}
+                                        type='file'
+                                        accept='image/*, video/*'
+                                        onChange={handleFileChange}
+                                        style={{ display: 'none' }}
+                                    />
+                                    <button className='select-button' onClick={() => fileInputRef.current.click()}><FontAwesomeIcon icon={faUpload} flip="horizontal" /> Upload</button><span>{filename && <p> {filename}</p>}</span>
+
                                 </div>
                                 <div className="ci">
                                     <button className='invoice-button' variant='ghost' onClick={invoiceClicked}>
@@ -161,6 +272,15 @@ function Purchaseform() {
                                     </button>
                                 </div>
                             </FormControl>
+                        </div>
+                        <div>
+                            {formData.bill_amount && <>
+                                <p>Your amount is: {formData.bill_amount}</p>
+                                <button onClick={proceedClicked}>proceed</button>
+                            </>}
+                            {proceedClick && <>
+                                <p>Your advertisement is confirmed and stream on date: {allotDate}</p>
+                            </>}
                         </div>
                         <Drawer
                             isOpen={isOpen}

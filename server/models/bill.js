@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const Businessman = require('./Businessman');
 
 const billSchema = new mongoose.Schema({
-    busi_name:{
-        type:String, 
-        required:true,
+    busi_name: {
+        type: String,
+        required: true,
     },
     slots: {
         type: Number,
@@ -18,32 +18,37 @@ const billSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    purchaseDate:{
+    purchaseDate: {
         type: Date,
         required: true
     },
-    AllotDate:{
+    AllotDate: {
         type: Date,
     },
-    Businessman_email:{
+    Businessman_email: {
         type: String,
         required: true
     },
-    purchasePrice:{
+    purchasePrice: {
         type: Number,
-        required:true,
-    },
-    college_name:{
-        type: String,
-        required:true,
-    },
-    no_of_users:{
-        type:Number,
         required: true,
     },
-    video_ids:[{
+    college_name: {
+        type: String,
+        required: true,
+    },
+    no_of_users: {
+        type: Number,
+        required: true,
+    },
+    video_ids: [{
         type: String,
     }],
+    run_flag: {
+        type: Boolean,
+        required: true,
+        default: 0,
+    }
 });
 
 const BillModel = mongoose.model("bills", billSchema);

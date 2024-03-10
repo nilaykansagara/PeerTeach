@@ -196,15 +196,15 @@ const BusinessmanHome = () => {
                 ))}
 
                 <div style={{ ...featureStyle, marginTop: viewcolleges ? '2vw' : '50px' }}>
-                    <h2 style={{ textAlign: 'center', color: '#7873f5', marginBottom: '30px' }}>Features</h2>
+                    {/* <h2 style={{ textAlign: 'center', color: '#7873f5', marginBottom: '30px' }}>Features</h2> */}
 
-                    <div>
-                        <FaBullhorn style={iconStyle} />
-                        <h2 style={titleStyle}>Boost Brand Awareness</h2>
-                        <p style={descriptionStyle}>Increase brand recognition and awareness by promoting your services through student-generated content. Stand out in a crowded market and attract more customers.</p>
-                    </div>
                     <div style={{ display: 'flex', marginTop: '5vw' }}>
                         <div >
+                            <FaBullhorn style={iconStyle} />
+                            <h2 style={titleStyle}>Boost Brand Awareness</h2>
+                            <p style={descriptionStyle}>Increase brand recognition and awareness by promoting your services through student-generated content. Stand out in a crowded market and attract more customers.</p>
+                        </div>
+                        <div>
                             <FaVideo style={iconStyle} />
                             <h2 style={titleStyle}>Advertise in Student Videos</h2>
                             <p style={descriptionStyle}>Reach your target audience by placing ads in videos created by students. Connect with a diverse audience through engaging content.</p>

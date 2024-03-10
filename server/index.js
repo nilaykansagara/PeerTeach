@@ -12,6 +12,7 @@ const students = require('./models/users');
 const AdModel = require('./models/ad');
 const BillModel = require('./models/bill');
 const fs = require('fs')
+const cron = require('node-cron');
 const path = require('path');
 const { request } = require("http");
 
@@ -19,6 +20,9 @@ app.use(express.json())
 app.use(cors())
 
 mongoose.connect("mongodb://127.0.0.1:27017/peerteach");
+
+
+
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -29,7 +33,17 @@ const storage = multer.diskStorage({
     },
 });
 
+const storage_ad = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads_ad/'); // Uploads will be stored in the 'uploads' folder
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname); // Rename the file
+    },
+});
+
 const upload = multer({ storage: storage });
+const upload_ad = multer({ storage: storage_ad });
 
 app.post('/VideoUpload', upload.single('video'), async (req, res) => {
     try {
@@ -646,9 +660,101 @@ app.post('/busilogin', (req, res) => {
     )
 });
 
-app.post('/addBill', async (req, res) => {
-    // const {}
+app.post('/createBill', async (req, res) => {
+    console.log("in add bill");
+    const formData = req.body.formData;
+    let count = 0;
+    let price = 0;
+
+    const college = await University.findOne({ name: formData.college_name });
+    console.log("college object in create bill");
+    console.log(college);
+    for (const program of college.programs) {
+        //console.log(program.branches);
+        count = count + (program.total_sems * program.branches.length);
+    }
+    price = (count * parseInt(formData.slots)) * 20;
+
+    if (parseInt(formData.users) > 5000 && parseInt(formData.users) <= 10000) {
+        price = price + (parseInt(formData.users) * 0.10);
+    }
+    else if (parseInt(formData.users) > 10000 && parseInt(formData.users) <= 20000) {
+        price = price + (parseInt(formData.users) * 0.20);
+    }
+    else if (parseInt(formData.users) > 20000 && parseInt(formData.users) <= 40000) {
+        price = price + (parseInt(formData.users) * 0.30);
+    }
+    console.log("returning from create bill");
+    console.log(price);
+    console.log("current date");
+    console.log(formData.purchase_date);
+    return res.json(price)
 })
+
+
+app.post('/addBill', upload_ad.single('ad'), async (req, res) => {
+    console.log("in proceed bill");
+    console.log("req checking");
+    console.log(req.file);
+    let temp_date;
+    try {
+        const college = await University.findOne({ name: req.body.college_name });
+
+        if (!college) {
+            return res.status(404).json({ error: "College not found" });
+        }
+
+        if (college.businessman_queue.length === 0) {
+            console.log("in queue null");
+            const alotted_date = req.body.purchase_date;
+            console.log("allot date");
+            console.log(alotted_date);
+            const nextDay = new Date(alotted_date);
+            nextDay.setDate(nextDay.getDate() + 1);
+            console.log("next of allot date");
+            console.log(nextDay);
+            temp_date = nextDay;
+            college.businessman_queue.push({ busi_email: req.body.busi_email, alotted_date: nextDay });
+            console.log("college object for queue");
+            console.log(college);
+            await college.save();
+        } else {
+            const lastEntry = college.businessman_queue[college.businessman_queue.length - 1];
+            const lastDate = lastEntry.alotted_date;
+            const nextDay = new Date(lastDate);
+            nextDay.setDate(nextDay.getDate() + 1);
+            temp_date = nextDay;
+            college.businessman_queue.push({ busi_email: req.body.busi_email, alotted_date: nextDay });
+            await college.save();
+        }
+
+        const final_date = new Date(temp_date);
+
+        // Create a new bill entry
+        const newBill = new BillModel({
+            busi_name: req.body.busi_name,
+            slots: req.body.slots,
+            adPath: req.file.path,
+            secs: req.body.secs,
+            purchaseDate: req.body.purchase_date,
+            AllotDate: final_date,
+            Businessman_email: req.body.busi_email,
+            purchasePrice: req.body.bill_amount,
+            college_name: req.body.college_name,
+            no_of_users: req.body.college_users,
+        });
+
+
+
+        // Save the new bill entry to the database
+        await newBill.save();
+
+        return res.json(final_date);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 app.post('/findAdVideos', async (req, res) => {
     const { selectedCollege, slclStudents, email, slots } = req.body;
@@ -666,71 +772,11 @@ app.post('/findAdVideos', async (req, res) => {
     let odd = 1;
     for (const program of selectedCollege.programs) {
         for (const branch of program.branches) {
-            for (const sem of program.totalsems / 2) {
-                 // getMonth() returns a zero-based index, so we add 1 to get the current month
+            for (let sem = 0; sem < program.totalsems / 2; sem++) {
+                // getMonth() returns a zero-based index, so we add 1 to get the current month
                 // console.log("Current month:", currentMonth);
 
-                if(month > 6)
-                {
-                    const students = await UserModel.find({
-                        branch: branch,
-                        currentSem: even,
-                        course: program.course,
-                    })
-                    let max_avg = 0, sec_max = 0;
-                    let email1, email2;
-                    for(const student of students)
-                    {
-                        let vc = 0;
-                        const videos = await Video.find({
-                            email:student.email,
-                        })
-                        let ln = videos.length;
-                        for(const video of videos)
-                        {
-                            vc += video.views_cnt;
-                        }
-
-                        vc = vc / ln;
-                        if(max_avg < vc)
-                        {
-                            sec_max = max_avg;
-                            max_avg = vc;
-                            email2 = email1;
-                            email1 = student.email;
-                        }
-                        else{
-                            if(sec_max<vc){
-                                sec_max = vc;
-                                email2 = student.email;
-                            }
-                        }
-                    }
-
-                    const decvideos1 = await Video.find({
-                        email:email1
-                    }).sort({ _id: -1 });
-
-
-                    const decvideos2 = await Video.find({
-                        email:email2
-                    }).sort({ _id: -1 });
-                    
-                    for(let i = 0; i < slots; i++)
-                    {
-                        if(i < decvideos1.length)
-                        {
-                            total_videos.push(decvideos1[i]);
-                        }
-                        if(i < decvideos2.length)
-                        {
-                            total_videos.push(decvideos2[i]);
-                        }
-                    }
-
-                    even+=2;
-                }
-                else {
+                if (currentMonth > 6) {
                     const students = await UserModel.find({
                         branch: branch,
                         currentSem: odd,
@@ -738,28 +784,25 @@ app.post('/findAdVideos', async (req, res) => {
                     })
                     let max_avg = 0, sec_max = 0;
                     let email1, email2;
-                    for(const student of students)
-                    {
+                    for (const student of students) {
                         let vc = 0;
                         const videos = await Video.find({
-                            email:student.email,
+                            email: student.email,
                         })
                         let ln = videos.length;
-                        for(const video of videos)
-                        {
+                        for (const video of videos) {
                             vc += video.views_cnt;
                         }
 
                         vc = vc / ln;
-                        if(max_avg < vc)
-                        {
+                        if (max_avg < vc) {
                             sec_max = max_avg;
                             max_avg = vc;
                             email2 = email1;
                             email1 = student.email;
                         }
-                        else{
-                            if(sec_max<vc){
+                        else {
+                            if (sec_max < vc) {
                                 sec_max = vc;
                                 email2 = student.email;
                             }
@@ -767,49 +810,92 @@ app.post('/findAdVideos', async (req, res) => {
                     }
 
                     const decvideos1 = await Video.find({
-                        email:email1
+                        email: email1
                     }).sort({ _id: -1 });
+
 
                     const decvideos2 = await Video.find({
-                        email:email2
+                        email: email2
                     }).sort({ _id: -1 });
 
-                    for(let i = 0; i < slots; i++)
-                    {
-                        if(i < decvideos1.length)
-                        {
+                    for (let i = 0; i < slots; i++) {
+                        if (i < decvideos1.length) {
                             total_videos.push(decvideos1[i]);
                         }
-                        if(i < decvideos2.length)
-                        {
+                        if (i < decvideos2.length) {
                             total_videos.push(decvideos2[i]);
                         }
                     }
-                    
-                    odd+=2;
+
+                    odd += 2;
                 }
-                
+                else {
+                    const students = await UserModel.find({
+                        branch: branch,
+                        currentSem: even,
+                        course: program.course,
+                    })
+                    let max_avg = 0, sec_max = 0;
+                    let email1, email2;
+                    for (const student of students) {
+                        let vc = 0;
+                        const videos = await Video.find({
+                            email: student.email,
+                        })
+                        let ln = videos.length;
+                        for (const video of videos) {
+                            vc += video.views_cnt;
+                        }
+
+                        vc = vc / ln;
+                        if (max_avg < vc) {
+                            sec_max = max_avg;
+                            max_avg = vc;
+                            email2 = email1;
+                            email1 = student.email;
+                        }
+                        else {
+                            if (sec_max < vc) {
+                                sec_max = vc;
+                                email2 = student.email;
+                            }
+                        }
+                    }
+
+                    const decvideos1 = await Video.find({
+                        email: email1
+                    }).sort({ _id: -1 });
+
+                    const decvideos2 = await Video.find({
+                        email: email2
+                    }).sort({ _id: -1 });
+
+                    for (let i = 0; i < slots; i++) {
+                        if (i < decvideos1.length) {
+                            total_videos.push(decvideos1[i]);
+                        }
+                        if (i < decvideos2.length) {
+                            total_videos.push(decvideos2[i]);
+                        }
+                    }
+
+                    even += 2;
+                }
+
             }
         }
     }
 
-    const ad = AdModel.findOne({
+    const bill = await BillModel.findOne({
         Businessman_email: email,
-        run_flag:0,
+        run_flag: 0,
     });
 
-    
-
-    for(const video of total_videos)
-    {
+    for (const video of total_videos) {
         video.ad_id = null;
-        video.ad_id = ad._id;
+        video.ad_id = bill._id;
 
     }
-
-
-
-
     return res.json({
         message: "from findAdVideos",
         clgname: selectedCollege.name,
@@ -817,6 +903,206 @@ app.post('/findAdVideos', async (req, res) => {
 });
 
 
+
+async function findAdVideos(bill, uni) {
+    console.log('Executing myFunction at a specific time... ' + bill);
+
+    const students = await UserModel.find({
+        college: bill.college_name
+    })
+
+    console.log(students);
+
+    const total_videos = [];
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1;
+    //console.log("current month");
+    console.log(currentMonth);
+
+    //const selectedCollege = await University.find({});
+    console.log('going into 3 loop in findadvideos');
+    for (let program of uni.programs) {
+        console.log("bingo progrma", program);
+        const course = program.course;
+
+        for (const branch of program.branches) {
+            console.log("bingo branch", branch);
+            let sem = 0;
+            let even = 2;
+            let odd = 1;
+            const prg = program;
+            for (sem = 0; sem < (program.total_sems / 2); sem++) {
+                // getMonth() returns a zero-based index, so we add 1 to get the current month
+                console.log("bingo sem" + sem);
+                console.log("bingo branch check" + branch);
+                if (currentMonth > 6) {
+
+                    const students = await UserModel.find({
+                        branch: branch,
+                        currentSem: odd,
+                        course: program.course
+                    })
+                    let max_avg = 0, sec_max = 0;
+                    let email1, email2;
+                    for (const student of students) {
+                        let vc = 0;
+                        const videos = await Video.find({
+                            email: student.email,
+                        })
+                        let ln = videos.length;
+                        for (const video of videos) {
+                            vc += video.views_cnt;
+                        }
+
+                        vc = vc / ln;
+                        if (max_avg < vc) {
+                            sec_max = max_avg;
+                            max_avg = vc;
+                            email2 = email1;
+                            email1 = student.email;
+                        }
+                        else {
+                            if (sec_max < vc) {
+                                sec_max = vc;
+                                email2 = student.email;
+                            }
+                        }
+                    }
+
+                    const decvideos1 = await Video.find({
+                        email: email1,
+                        semester: { $mod: [2, 1] }
+                    }).sort({ _id: -1 });
+
+                    console.log(email1);
+                    const decvideos2 = await Video.find({
+                        email: email2,
+                        semester: { $mod: [2, 1] }
+                    }).sort({ _id: -1 });
+                    console.log(email2);
+
+                    for (let i = 0; i < slots; i++) {
+                        if (i < decvideos1.length) {
+                            total_videos.push(decvideos1[i]);
+                        }
+                        if (i < decvideos2.length) {
+                            total_videos.push(decvideos2[i]);
+                        }
+                    }
+
+                    odd += 2;
+                }
+                else {
+                    console.log("in even sem")
+                    console.log(even);
+                    console.log("details of students find");
+                    console.log(branch, even, program.course);
+                    const students = await UserModel.find({
+                        branch: branch,
+                        currentSem: even,
+                        course: program.course,
+                    });
+                    console.log(students);
+                    let max_avg = 0, sec_max = 0;
+                    let email1, email2;
+                    for (const student of students) {
+                        let vc = 0;
+                        const videos = await Video.find({
+                            email: student.email,
+                        })
+                        let ln = videos.length;
+                        for (const video of videos) {
+                            vc += video.views_cnt;
+                        }
+
+                        vc = vc / ln;
+                        if (max_avg < vc) {
+                            sec_max = max_avg;
+                            max_avg = vc;
+                            email2 = email1;
+                            email1 = student.email;
+                        }
+                        else {
+                            if (sec_max < vc) {
+                                sec_max = vc;
+                                email2 = student.email;
+                            }
+                        }
+                    }
+
+                    const decvideos1 = await Video.find({
+                        email: email1,
+                        semester: { $mod: [2, 0] }
+                    }).sort({ _id: -1 });
+                    console.log(email1);
+
+                    const decvideos2 = await Video.find({
+                        email: email2,
+                        semester: { $mod: [2, 0] }
+                    }).sort({ _id: -1 });
+                    console.log(email2);
+                    console.log("before bill slots " + bill.slots);
+                    for (let i = 0; i < bill.slots; i++) {
+                        console.log("in bill slots " + i);
+                        if (i < decvideos1.length) {
+                            total_videos.push(decvideos1[i]);
+                        }
+                        if (i < decvideos2.length) {
+                            total_videos.push(decvideos2[i]);
+                        }
+                    }
+
+                    even += 2;
+                }
+
+            }
+        }
+    }
+    console.log('total videos');
+    console.log(total_videos);
+    let upbill = await BillModel.findOne({ _id: bill._id });
+    for (const video of total_videos) {
+        video.bill_id = null;
+        video.bill_id = bill._id;
+        upbill.video_ids.push(video._id);
+        await video.save();
+    }
+    await upbill.save();
+    console.log('done from findadvideos');
+}
+
+cron.schedule('*/10 * * * * *', async () => {
+    console.log("hello from cron");
+    const universities = await University.find();
+    const currentDate = new Date().toDateString();
+    const cDate = new Date();
+
+    for (const uni of universities) {
+        if (uni.businessman_queue.length != 0) {
+            console.log("hello from cron con1");
+            if (uni.businessman_queue[0].alotted_date.toDateString() < currentDate) {
+                console.log("hello from cron con2");
+                uni.businessman_queue.shift();
+            }
+            if (uni.businessman_queue.length != 0 && uni.businessman_queue[0].alotted_date.toDateString() === currentDate) {
+                console.log("hello from cron con3");
+                console.log(uni.businessman_queue[0].alotted_date.toDateString(), currentDate);
+                const bill = await BillModel.find({ Businessman_email: uni.businessman_queue[0].busi_email, run_flag: false });
+                for (b of bill) {
+                    if (b.AllotDate.toDateString() === currentDate) {
+                        console.log(b);
+                        findAdVideos(b, uni);
+                        break;
+                    }
+                }
+
+
+            }
+        }
+    }
+});
+
+// Schedule myFunction to run at 12:00 AM every day
 
 
 
