@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef} from 'react';
 import axios from 'axios';
 import './list.css';
 import { useNavigate } from "react-router-dom";
@@ -22,6 +22,7 @@ const VideoList = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(isUserLoggedIn);
     const navigate = useNavigate();
     const [profile, setProfile] = useState(false);
+    const [runvid, setrunvid] = useState(null);
     const [searchData, setsearchData] = useState({
         title: '',
         college: '',
@@ -33,7 +34,10 @@ const VideoList = () => {
         email: '',
         batch: '',
     });
+    
 
+
+    
 
 
     // useEffect(() => {
@@ -237,6 +241,17 @@ const VideoList = () => {
                 console.error('Error in remove', error);
             });
     };
+    const [adStates, setAdStates] = useState({}); // State to track ad display status for each video
+    const [showAd, setShowAd] = useState(true);
+
+    // Function to handle ad end for a specific video
+    const handleAdEndForVideo = (videoId) => {
+        // Update the state to mark the ad as shown for this video
+        setAdStates((prevAdStates) => ({
+            ...prevAdStates,
+            [videoId]: true,
+        }));
+    };
 
     useEffect(() => {
         setwlf(null);
@@ -253,8 +268,46 @@ const VideoList = () => {
             });
     }, [change_view]);
 
-    const recordView = async (arg) => {
-        console.log(arg);
+    // useEffect(() => {
+    //     if (video.ad.ad_path) {
+    //         fetch(`http://localhost:3001/videos/${video._id}/ad`)
+    //             .then(response => {
+    //                 if (!response.ok) {
+    //                     throw new Error('Failed to fetch ad');
+    //                 }
+    //                 return response;
+    //             })
+    //             .then(() => {
+    //                 // Start playing the main video after 4 seconds
+    //                 setTimeout(() => {
+    //                     videoRef.current.play();
+    //                 }, 4000);
+    //             })
+    //             .catch(error => {
+    //                 console.error('Error fetching ad:', error);
+    //                 // Start playing the main video immediately
+    //                 videoRef.current.play();
+    //             });
+    //     } else {
+    //         // If no ad, play the main video immediately
+    //         videoRef.current.play();
+    //     }
+    // }, [video.ad.ad_path, video._id]);
+
+    const recordView = async (video) => {
+        if (videos.find(videovar => videovar._id === video._id)?.ad && !adStates[video._id]) {
+            // Show the ad first
+            setShowAd(true);
+            // Set a timeout to hide the ad and start the main video after the ad ends
+            setTimeout(() => {
+                setShowAd(false);
+                handleAdEndForVideo(video._id);
+                setrunvid(video._id); // Set the current video to play
+            }, 4000); // Adjust this timeout as needed
+        } else {
+            // If there's no ad or the ad has already been shown for this video, start the main video
+            setrunvid(video._id);
+        }
         let email;
         if (isLoggedIn) {
             let utemp = localStorage.getItem('userData');
@@ -264,6 +317,8 @@ const VideoList = () => {
         else {
             email = null;
         }
+        let arg = video._id;
+        console.log(arg);
         let fingerprint = localStorage.getItem('fingerprint');
         console.log(fingerprint);
         axios.post('http://localhost:3001/countViews', { email, fingerprint, arg })
@@ -271,6 +326,9 @@ const VideoList = () => {
                 console.log("View is updated successfully.");
                 setChange_view((c) => !c)
             })
+
+        
+        
 
     }
 
@@ -433,10 +491,23 @@ const VideoList = () => {
 
                                 <div key={video._id} style={{ display: 'inline-flex', alignItems: 'center', marginRight: '0.2%', marginBottom: '8px' }}>
                                     {console.log(video.views_cnt)}
-                                    <video controls onPlay={() => recordView(video._id)} width="270" height="152">
-                                        <source src={`http://localhost:3001/videos/${video._id}`} type="video/mp4" />
-                                        Your browser does not support the video tag.
-                                    </video>
+                                    <div>
+                                        {/* Show the ad video if ad is available and showAd is true */}
+                                        {video.ad && showAd && (
+                                            <video onEnded={() => handleAdEndForVideo(video._id)} controls width="270" height="152">
+                                                <source src={`http://localhost:3001/adAppend/${video._id}`} type="video/mp4" />
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        )}
+
+                                        {/* Show the main video if ad has ended or there's no ad */}
+                                        {(!video.ad || !showAd || adStates[video._id]) && (
+                                            <video controls autoPlay={video._id === runvid} onPlay={() => recordView(video)} width="270" height="152">
+                                                <source src={`http://localhost:3001/videos/${video._id}`} type="video/mp4" />
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        )}
+                                    </div>
                                     <div style={{ marginLeft: '10px' }}>
                                         <p style={{ marginBottom: '1px', fontSize: '25px' }}><b>{video.title}</b></p>
                                         <p style={{ marginBottom: '1px', fontSize: '15px' }}>{video.otherDetails}</p>

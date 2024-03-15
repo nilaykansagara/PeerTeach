@@ -118,7 +118,7 @@ app.post('/VideoFilter', async (req, res) => {
         console.log(req.body);
 
         // Use the filter to find matching videos
-        const videos = await Video.find(filter, '_id title college course branch semester subject otherDetails videoPath name email likec dislikec liked disliked batch notes')
+        const videos = await Video.find(filter, '_id title college course branch semester subject otherDetails videoPath name email likec dislikec liked disliked batch notes ad')
             .sort({ _id: -1 });
 
         console.log("Result");
@@ -135,9 +135,8 @@ app.post('/VideoFilter', async (req, res) => {
 
 app.get('/videos', async (req, res) => {
     try {
-        const videos = await Video.find({}, '_id title college course branch semester subject otherDetails videoPath name email notes likec dislikec liked disliked batch views_cnt').sort({ _id: -1 });
+        const videos = await Video.find({}, '_id title college course branch semester subject otherDetails videoPath name email notes likec dislikec liked disliked batch views_cnt ad').sort({ _id: -1 });
         res.json(videos);
-        console.log(videos);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error fetching videos' });
@@ -284,6 +283,68 @@ app.get('/videos/:id', async (req, res) => {
         res.status(404).send('Video not found');
     }
 });
+
+
+
+app.get('/adAppend/:id', async (req, res) => {
+
+    const videoId = req.params.id;
+    console.log(videoId);
+    //Fetch video information from the database based on the videoId
+    const video = await Video.findById(videoId);
+    if (video)
+        console.log(video.title);
+    if (!video) {
+        return res.status(404).send('Video not found');
+    }
+    //const temp = toString(video.videoPath);
+    // Construct the video file path
+    //const videoPath = path.join(__dirname, 'uploads', video.videoPath);
+    const videoPath1 = video.ad.ad_path;
+    // Check if the video file exists
+    if (fs.existsSync(videoPath1)) {
+
+        const stat = fs.statSync(videoPath1);
+        const fileSize = stat.size;
+        const range = req.headers.range;
+
+        if (range) {
+            const parts = range.replace(/bytes=/, "").split("-");
+            const start = parseInt(parts[0], 10);
+            const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+
+            const chunksize = (end - start) + 1;
+            const file = fs.createReadStream(videoPath1, { start, end });
+
+            const head = {
+                'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+                'Accept-Ranges': 'bytes',
+                'Content-Length': chunksize,
+                'Content-Type': 'video/mp4',
+            };
+
+            res.writeHead(206, head);
+            file.pipe(res);
+            console.log("Hello1");
+        } else {
+            // If no range header is provided, send the entire video
+            console.log("Hello2");
+            const head = {
+                'Content-Length': fileSize,
+                'Content-Type': 'video/mp4',
+            };
+
+            res.writeHead(200, head);
+            fs.createReadStream(videoPath1).pipe(res);
+        }
+    } else {
+        // Video file not found
+        res.status(404).send('Video not found');
+    }
+});
+
+
+
 
 app.get('/generate-thumbnail/:videoId', async (req, res) => {
     try {
@@ -571,9 +632,7 @@ app.post('/dislike/:videoId/:email', async (req, res) => {
 app.post('/countViews', async (req, res) => {
     const { email, fingerprint, arg } = req.body;
     let total_views;
-    console.log("HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
-    console.log(arg);
-    console.log(fingerprint)
+   
     if (email) {
         Video.findById(arg).then(video => {
             if (video) {
@@ -583,11 +642,11 @@ app.post('/countViews', async (req, res) => {
                     video.views_cnt += 1;
                     video.save();
                     total_views = video.views.length;
-                    console.log("Its unique view");
+                    
                     return res.json({ video });
                 }
                 else {
-                    console.log("Its not unique view");
+                    
                     return res.json({ video });
                 }
             }
@@ -602,11 +661,11 @@ app.post('/countViews', async (req, res) => {
                     video.views_cnt += 1;
                     video.save();
                     total_views = video.views.length;
-                    console.log("Its unique view");
+                    
                     return res.json({ video });
                 }
                 else {
-                    console.log("Its not unique view from fingerprint");
+                    
                     return res.json({ video });
                 }
             }
@@ -1062,8 +1121,9 @@ async function findAdVideos(bill, uni) {
     console.log(total_videos);
     let upbill = await BillModel.findOne({ _id: bill._id });
     for (const video of total_videos) {
-        video.bill_id = null;
-        video.bill_id = bill._id;
+        // video.bill_id = null;
+        video.ad.bill_id = bill._id;
+        video.ad.ad_path = bill.adPath;
         upbill.video_ids.push(video._id);
         await video.save();
     }
@@ -1074,6 +1134,15 @@ async function findAdVideos(bill, uni) {
 cron.schedule('*/10 * * * * *', async () => {
     console.log("hello from cron");
     const universities = await University.find();
+    const videos = await Video.find({});
+    // for(let video of videos)
+    // {
+    //     if(video.ad)
+    //     {
+    //         video.ad = null;
+    //         await video.save();
+    //     }
+    // }
     const currentDate = new Date().toDateString();
     const cDate = new Date();
 
@@ -1090,9 +1159,12 @@ cron.schedule('*/10 * * * * *', async () => {
                 const bill = await BillModel.find({ Businessman_email: uni.businessman_queue[0].busi_email, run_flag: false });
                 for (b of bill) {
                     if (b.AllotDate.toDateString() === currentDate) {
-                        console.log(b);
-                        findAdVideos(b, uni);
-                        break;
+                        if(b.video_ids.length == 0 )
+                        {
+                            console.log(b);
+                            findAdVideos(b, uni);
+                            break;
+                        }
                     }
                 }
 
@@ -1101,6 +1173,50 @@ cron.schedule('*/10 * * * * *', async () => {
         }
     }
 });
+
+
+// Method to serve the ad
+app.get('/videos/:id/ad', async (req, res) => {
+    console.log("hello from ad");
+	const videoId = req.params.id;
+	// Fetch video information from the database based on the videoId
+	const video = await Video.findById(videoId);
+	if (!video || !video.ad.ad_path || !fs.existsSync(video.ad.ad_path)) {
+    	return res.status(404).send('Ad not found');
+	}
+
+	// Serve the ad with appropriate headers
+	const adStat = fs.statSync(video.ad.ad_path);
+	const adSize = adStat.size;
+	res.writeHead(200, {
+    	'Content-Length': adSize,
+    	'Content-Type': getContentType(video.ad.ad_path)
+	});
+	const adStream = fs.createReadStream(video.ad.ad_path);
+	adStream.pipe(res);
+});
+
+// Method to serve the main video
+
+
+function getContentType(filePath) {
+	const ext = path.extname(filePath).toLowerCase();
+	switch (ext) {
+    	case '.mp4':
+        	return 'video/mp4';
+    	case '.jpg':
+    	case '.jpeg':
+        	return 'image/jpeg';
+    	case '.png':
+        	return 'image/png';
+    	case '.gif':
+        	return 'image/gif';
+    	default:
+        	return 'application/octet-stream'; // Default content type
+	}
+}
+
+
 
 // Schedule myFunction to run at 12:00 AM every day
 

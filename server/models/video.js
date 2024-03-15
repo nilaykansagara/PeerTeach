@@ -75,8 +75,13 @@ const videoSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
-    bill_id: {
-        type: String,
+    ad: {
+        bill_id:{
+            type: String, 
+        },
+        ad_path:{
+            type: String,
+        }
     },
 });
 
