@@ -632,7 +632,7 @@ app.post('/dislike/:videoId/:email', async (req, res) => {
 app.post('/countViews', async (req, res) => {
     const { email, fingerprint, arg } = req.body;
     let total_views;
-   
+
     if (email) {
         Video.findById(arg).then(video => {
             if (video) {
@@ -642,11 +642,11 @@ app.post('/countViews', async (req, res) => {
                     video.views_cnt += 1;
                     video.save();
                     total_views = video.views.length;
-                    
+
                     return res.json({ video });
                 }
                 else {
-                    
+
                     return res.json({ video });
                 }
             }
@@ -661,11 +661,11 @@ app.post('/countViews', async (req, res) => {
                     video.views_cnt += 1;
                     video.save();
                     total_views = video.views.length;
-                    
+
                     return res.json({ video });
                 }
                 else {
-                    
+
                     return res.json({ video });
                 }
             }
@@ -756,14 +756,21 @@ app.post('/addBill', upload_ad.single('ad'), async (req, res) => {
     console.log("req checking");
     console.log(req.file);
     let temp_date;
+    let lastDate;
+    const college = await University.findOne({ name: req.body.college_name });
+    const currentDate = new Date();
+    if (college.businessman_queue.length != 0) {
+        const lastEntry = college.businessman_queue[college.businessman_queue.length - 1];
+        lastDate = lastEntry.alotted_date;
+    }
+
     try {
-        const college = await University.findOne({ name: req.body.college_name });
 
         if (!college) {
             return res.status(404).json({ error: "College not found" });
         }
 
-        if (college.businessman_queue.length === 0) {
+        if (college.businessman_queue.length === 0 || lastDate <= currentDate) {
             console.log("in queue null");
             const alotted_date = req.body.purchase_date;
             console.log("allot date");
@@ -777,14 +784,14 @@ app.post('/addBill', upload_ad.single('ad'), async (req, res) => {
             console.log("college object for queue");
             console.log(college);
             await college.save();
-        } else {
-            const lastEntry = college.businessman_queue[college.businessman_queue.length - 1];
-            const lastDate = lastEntry.alotted_date;
+        }
+        else if (lastDate > currentDate) {
             const nextDay = new Date(lastDate);
             nextDay.setDate(nextDay.getDate() + 1);
             temp_date = nextDay;
             college.businessman_queue.push({ busi_email: req.body.busi_email, alotted_date: nextDay });
             await college.save();
+
         }
 
         const final_date = new Date(temp_date);
@@ -807,8 +814,9 @@ app.post('/addBill', upload_ad.single('ad'), async (req, res) => {
 
         // Save the new bill entry to the database
         await newBill.save();
-
-        return res.json(final_date);
+        let sdate = final_date.toDateString();
+        console.log("Hurray Date: " + sdate);
+        return res.json(sdate);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Internal server error" });
@@ -1159,8 +1167,7 @@ cron.schedule('*/10 * * * * *', async () => {
                 const bill = await BillModel.find({ Businessman_email: uni.businessman_queue[0].busi_email, run_flag: false });
                 for (b of bill) {
                     if (b.AllotDate.toDateString() === currentDate) {
-                        if(b.video_ids.length == 0 )
-                        {
+                        if (b.video_ids.length == 0) {
                             console.log(b);
                             findAdVideos(b, uni);
                             break;
@@ -1178,42 +1185,42 @@ cron.schedule('*/10 * * * * *', async () => {
 // Method to serve the ad
 app.get('/videos/:id/ad', async (req, res) => {
     console.log("hello from ad");
-	const videoId = req.params.id;
-	// Fetch video information from the database based on the videoId
-	const video = await Video.findById(videoId);
-	if (!video || !video.ad.ad_path || !fs.existsSync(video.ad.ad_path)) {
-    	return res.status(404).send('Ad not found');
-	}
+    const videoId = req.params.id;
+    // Fetch video information from the database based on the videoId
+    const video = await Video.findById(videoId);
+    if (!video || !video.ad.ad_path || !fs.existsSync(video.ad.ad_path)) {
+        return res.status(404).send('Ad not found');
+    }
 
-	// Serve the ad with appropriate headers
-	const adStat = fs.statSync(video.ad.ad_path);
-	const adSize = adStat.size;
-	res.writeHead(200, {
-    	'Content-Length': adSize,
-    	'Content-Type': getContentType(video.ad.ad_path)
-	});
-	const adStream = fs.createReadStream(video.ad.ad_path);
-	adStream.pipe(res);
+    // Serve the ad with appropriate headers
+    const adStat = fs.statSync(video.ad.ad_path);
+    const adSize = adStat.size;
+    res.writeHead(200, {
+        'Content-Length': adSize,
+        'Content-Type': getContentType(video.ad.ad_path)
+    });
+    const adStream = fs.createReadStream(video.ad.ad_path);
+    adStream.pipe(res);
 });
 
 // Method to serve the main video
 
 
 function getContentType(filePath) {
-	const ext = path.extname(filePath).toLowerCase();
-	switch (ext) {
-    	case '.mp4':
-        	return 'video/mp4';
-    	case '.jpg':
-    	case '.jpeg':
-        	return 'image/jpeg';
-    	case '.png':
-        	return 'image/png';
-    	case '.gif':
-        	return 'image/gif';
-    	default:
-        	return 'application/octet-stream'; // Default content type
-	}
+    const ext = path.extname(filePath).toLowerCase();
+    switch (ext) {
+        case '.mp4':
+            return 'video/mp4';
+        case '.jpg':
+        case '.jpeg':
+            return 'image/jpeg';
+        case '.png':
+            return 'image/png';
+        case '.gif':
+            return 'image/gif';
+        default:
+            return 'application/octet-stream'; // Default content type
+    }
 }
 
 

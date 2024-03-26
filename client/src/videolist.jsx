@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import './list.css';
 import { useNavigate } from "react-router-dom";
@@ -34,10 +34,10 @@ const VideoList = () => {
         email: '',
         batch: '',
     });
-    
 
 
-    
+
+
 
 
     // useEffect(() => {
@@ -327,8 +327,8 @@ const VideoList = () => {
                 setChange_view((c) => !c)
             })
 
-        
-        
+
+
 
     }
 

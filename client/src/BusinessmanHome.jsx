@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBuildingColumns, faUsers, faLocation } from '@fortawesome/free-solid-svg-icons';
 import { FaVideo, FaUserFriends, FaBullhorn } from 'react-icons/fa';
+import Image from 'react-bootstrap/Image';
+import welcomeImage from './assets/welcome.png';
+import { faCalendar, faCheckCircle, faHandsPraying, faInr, faRupee, faTimeline, faTimes, faUpload, faUser } from '@fortawesome/free-solid-svg-icons';
 
 const BusinessmanHome = () => {
     const navigate = useNavigate();
@@ -179,10 +182,13 @@ const BusinessmanHome = () => {
 
 
                 <div style={bannerStyle}>
-                    <h1>Welcome to Our Business Page</h1>
-                    <p>Reach your target audience effectively by placing ads on student videos.</p>
-                    <p>Tap into the dynamic student community and boost your brand's visibility.</p>
-                    <button style={buttonStyle} onClick={viewColleges}>Get Colleges!</button>
+                    <div style={{ marginLeft: '1.5%', color: 'black', margin: '1% 7% 1% 7%', fontSize: '17px', textAlign: 'center' }}>
+                        <Image style={{ height: '150px' }} src={welcomeImage} />
+                        <h1 style={{ color: '#0076CE', fontSize: '36px', fontWeight: 'bold', marginBottom: '10px' }}><FontAwesomeIcon style={{ color: '#1F305E' }} icon={faHandsPraying} /> Welcome to PeerTeach Advertising Platform</h1>
+                        <p style={{ marginBottom: '20px', fontSize: '19px' }}>Attract nearby college students by advertising through PeerTeach. Our platform provides targeted advertising solutions tailored to local college campuses, empowering your business to reach and engage with this specific audience. Grow your business with PeerTeach's effective advertising strategies.</p>
+                        <p style={{ fontStyle: 'italic', marginBottom: '20px' }}><b>Discover the power of localized advertising and connect with potential customers like never before.</b></p>
+                        <button style={buttonStyle} onClick={viewColleges}>Get Colleges!</button>
+                    </div>
                 </div>
 
                 {viewcolleges && nearbycolleges.map((college, index) => (
@@ -198,13 +204,13 @@ const BusinessmanHome = () => {
                 <div style={{ ...featureStyle, marginTop: viewcolleges ? '2vw' : '50px' }}>
                     {/* <h2 style={{ textAlign: 'center', color: '#7873f5', marginBottom: '30px' }}>Features</h2> */}
 
-                    <div style={{ display: 'flex', marginTop: '5vw', justifyItems:'flex-start' }}>
+                    <div style={{ display: 'flex', marginTop: '5vw', justifyItems: 'flex-start' }}>
                         <div>
                             <FaBullhorn style={iconStyle} />
                             <h2 style={titleStyle}>Boost Brand Awareness</h2>
                             <p style={descriptionStyle}>Increase brand recognition and awareness by promoting your services through student-generated content. Stand out in a crowded market and attract more customers.</p>
                         </div>
-                        <div style={{marginLeft:'2rem'}}>
+                        <div style={{ marginLeft: '2rem' }}>
                             <FaVideo style={iconStyle} />
                             <h2 style={titleStyle}>Advertise in Student Videos</h2>
                             <p style={descriptionStyle}>Reach your target audience by placing ads in videos created by students. Connect with a diverse audience through engaging content.</p>
