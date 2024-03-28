@@ -275,3 +275,25 @@ form button:hover {
   font-size: 16px;
   color: #333;
 } */
+
+
+.invoice-container {
+  background-color: #ffebee;
+  border: 1px solid #d32f2f;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.invoice-header {
+  margin-bottom: 20px;
+}
+
+.invoice-details p {
+  margin-bottom: 10px;
+}
+
+.invoice-details p svg {
+  vertical-align: middle;
+  margin-right: 5px;
+}

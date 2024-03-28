@@ -6,7 +6,8 @@ import { Input } from '@chakra-ui/react';
 import { FormControl, FormLabel } from '@chakra-ui/react';
 import Image from 'react-bootstrap/Image';
 import welcomeImage from './assets/welcome.png';
-
+import profileImage from './assets/user.png';
+import Profile_Busi from './Profile_Busi';
 import { Form, useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -24,10 +25,12 @@ import {
 } from '@chakra-ui/react'
 import { faBullhorn, faCalendar, faCheck, faCheckCircle, faCoins, faCrown, faHandsPraying, faInr, faList, faRupee, faSquare, faSquareCheck, faTimeline, faTimes, faUpload, faUser } from '@fortawesome/free-solid-svg-icons';
 import { faRectangleList } from '@fortawesome/free-solid-svg-icons';
+// import Razorpay from 'razorpay'
 
 
 
 function Purchaseform() {
+    // <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     let ctemp = localStorage.getItem('selectedCollege');
     let sctemp = localStorage.getItem('slclStudents');
     const selectedCollege = JSON.parse(ctemp);
@@ -42,6 +45,9 @@ function Purchaseform() {
     const [costslot3, setcostslot3] = useState(null);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
     const [vc, setvc] = useState(0);
+    const [selectedCost, setSelectedCost] = useState(null);
+    const [profile, setProfile] = useState(false);
+    // const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         slots: '',
@@ -93,9 +99,23 @@ function Purchaseform() {
     };
 
 
+    // useEffect(() => {
+    //     // Create script element
+    //     const script = document.createElement('script');
+    //     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    //     script.async = true;
+
+    //     // Append the script to the document head
+    //     document.head.appendChild(script);
+
+    //     // Clean up function to remove the script when the component unmounts
+
+    //   }, []);
 
 
-    const proceedClicked = () => {
+
+    const proceedClicked = (e) => {
+        // e.preventDefault();
         const formDataToSend = new FormData();
         formDataToSend.append('slots', plan);
         formDataToSend.append('secs', formData.secs);
@@ -105,9 +125,72 @@ function Purchaseform() {
         formDataToSend.append('busi_email', formData.busi_email);
         formDataToSend.append('college_name', formData.college_name);
         formDataToSend.append('college_users', formData.college_users);
-        formDataToSend.append('bill_amount', formData.bill_amount);
+        formDataToSend.append('bill_amount', selectedCost);
 
+        if (plan == 1) {
+            formDataToSend.append('plan', "Basic");
+        }
+        else if (plan == 2) {
+            formDataToSend.append('plan', "Pro");
+        }
+        else if (plan == 3) {
+            formDataToSend.append('plan', "Premium");
+        }
 
+        formDataToSend.append('viewer_cost', vc);
+        let total_cost = selectedCost + vc;
+        let name = formData.busi_name;
+        let email = formData.busi_email;
+        //     var options = {
+        //         "key": "rzp_test_LCVuFgn411CE6D", // Enter the Key ID generated from the Dashboard
+        //         "amount": { total_cost }, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        //         "currency": "INR",
+        //         "name": "PeerTeach", //your business name
+        //         "description": "Test Transaction",
+        //         // "image": "https://example.com/your_logo",
+        //         "order_id": {}, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+        //         "handler": function (response) {
+        //             alert(response.razorpay_payment_id);
+        //             alert(response.razorpay_order_id);
+        //             alert(response.razorpay_signature)
+        //             axios.post('http://localhost:3001/addBill', formDataToSend)
+        //                 .then((response) => {
+        //                     console.log(response.data);
+        //                     setproceedClick(1);
+        //                     setallotDate(response.data);
+        //                     setShow(false);
+        //                     setShow2(true);
+        //                 })
+        //                 .catch((error) => {
+        //                     console.log("Error:", error);
+        //                     alert('Error creating invoice. Please try again.');
+        //                 });
+        //         },
+        //         "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
+        //             "name": {name}, //your customer's name
+        //             "email": {email},
+        //             // "contact": "9000090000"  //Provide the customer's phone number for better conversion rates 
+        //         },
+        //         "notes": {
+        //             "address": "Razorpay Corporate Office"
+        //         },
+        //         "theme": {
+        //             "color": "#3399cc"
+        //         }
+        //     };
+        //     // var rzp1 = new Razorpay(options);
+        //     // rzp1.on('payment.failed', function (response) {
+        //     //     alert(response.error.code);
+        //     //     alert(response.error.description);
+        //     //     alert(response.error.source);
+        //     //     alert(response.error.step);
+        //     //     alert(response.error.reason);
+        //     //     alert(response.error.metadata.order_id);
+        //     //     alert(response.error.metadata.payment_id);
+        //     // });
+
+        //     // rzp1.open();
+        //     // e.preventDefault();
         axios.post('http://localhost:3001/addBill', formDataToSend)
             .then((response) => {
                 console.log(response.data);
@@ -120,6 +203,7 @@ function Purchaseform() {
                 console.log("Error:", error);
                 alert('Error creating invoice. Please try again.');
             });
+
     };
 
 
@@ -237,21 +321,39 @@ function Purchaseform() {
     const handleShowpr = () => {
         setShow(true);
         setPlan(2);
+        setSelectedCost(costslot2)
     }
     const handleShowpm = () => {
         setShow(true);
         setPlan(3);
+        setSelectedCost(costslot3)
     }
     const handleShowbs = () => {
         setShow(true);
         setPlan(1);
+        setSelectedCost(costslot1)
     }
 
 
+    const showBills = () => {
+        navigate('/mybills');
+    }
+
+    const Logout = () => {
+        alert('Successfully Logged Out.');
+        localStorage.removeItem('bloggedin');
+        localStorage.removeItem('buserData');
+        navigate('/Busilogin');
+    }
+
+    const profile_show = (e) => {
+        setProfile(!profile);
+    }
 
     return (
         <>
             <div>
+
                 <nav className="navbar navbar-expand-lg navbar-light bg-light">
                     <div className="container-fluid" style={{ background: 'black', height: '60px' }}>
                         <a style={{
@@ -273,10 +375,27 @@ function Purchaseform() {
                                     <a className="nav-link active" style={{ marginTop: '5px', color: '#C8C8C8', fontSize: '17px', cursor: 'pointer' }} aria-current="page" onClick={homeClicked}><b>Home</b></a>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link active" style={{ marginTop: '5px', color: '#C8C8C8', fontSize: '17px', cursor: 'pointer' }} aria-current="page" onClick={onOpen} isOpen={isOpen}><b>Help</b></a>
+                                    <a className="nav-link active" style={{ marginTop: '5px', color: '#C8C8C8', fontSize: '17px', cursor: 'pointer' }} aria-current="page" onClick={showBills}><b>My Bills</b></a>
+                                </li>
+                                <li className="nav-item">
+                                    <a className="nav-link active" style={{ marginTop: '5px', color: '#C8C8C8', fontSize: '17px', cursor: 'pointer' }} aria-current="page" onClick={Logout}><b>Logout</b></a>
                                 </li>
 
                             </ul>
+                            <a style={{ backgroundColor: 'linear-gradient(to bottom right, #ff4d4d, #007bff)', }} onClick={profile_show}> {/* Replace '/profile' with the link you want */}
+                                <img
+                                    src={profileImage}
+                                    alt="Profile"
+                                    style={{
+                                        width: '40px',
+                                        height: '40px',
+                                        backgroundColor: 'linear-gradient(to bottom right, #ff4d4d, #007bff)',
+                                        borderRadius: '50%',
+                                        marginLeft: 'auto',
+                                        marginRight: '10px',
+                                    }}
+                                />
+                            </a>
                         </div>
                     </div>
                 </nav>
@@ -302,7 +421,6 @@ function Purchaseform() {
                             Explore our different pricing <b>plans</b> to choose the one that best fits your needs. Remember to review the <b>terms and conditions</b> before finalizing your selection.
                         </p>
                     </div>
-
                 </Carousel.Item>
                 <Carousel.Item>
                     <div style={{ marginLeft: '1.5%', color: 'black', margin: '1% 7% 1% 7%' }}>
@@ -472,7 +590,7 @@ function Purchaseform() {
                                     Close
                                 </Button>
                                 <Button variant="primary" onClick={proceedClicked}>
-                                    Create Bill
+                                    Pay
                                 </Button>
                             </Modal.Footer>
                         </Modal>
@@ -539,6 +657,10 @@ function Purchaseform() {
                     </div >
                 </Carousel.Item>
             </Carousel>
+            {
+                profile &&
+                <Profile_Busi onClose={profile_show} />
+            }
 
 
         </>

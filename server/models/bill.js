@@ -48,6 +48,14 @@ const billSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: 0,
+    },
+    viewer_cost:{
+        type:Number,
+        // required:true,
+    },
+    plan_type:{
+        type:String,
+        enum:["Basic", "Pro", "Premium"],
     }
 });
 

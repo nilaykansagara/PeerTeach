@@ -6,7 +6,7 @@ import profileImage from './assets/user.png';
 import Profile from "./Profile";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faThumbsDown, faEye, faClock, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp, faThumbsDown, faEye, faClock, faTrash, faMailBulk } from '@fortawesome/free-solid-svg-icons';
 
 const temp = localStorage.getItem('loggedin');
 

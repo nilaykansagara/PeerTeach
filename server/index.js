@@ -795,7 +795,8 @@ app.post('/addBill', upload_ad.single('ad'), async (req, res) => {
         }
 
         const final_date = new Date(temp_date);
-
+        
+        console.log("THis is vc", req.body.vc)
         // Create a new bill entry
         const newBill = new BillModel({
             busi_name: req.body.busi_name,
@@ -808,6 +809,8 @@ app.post('/addBill', upload_ad.single('ad'), async (req, res) => {
             purchasePrice: req.body.bill_amount,
             college_name: req.body.college_name,
             no_of_users: req.body.college_users,
+            viewer_cost: req.body.viewer_cost,
+            plan_type: req.body.plan,
         });
 
 
@@ -968,6 +971,32 @@ app.post('/findAdVideos', async (req, res) => {
         clgname: selectedCollege.name,
     })
 });
+
+
+app.post('/findBills', async(req, res)=>
+{
+    console.log(req.body);
+    // const {email} = req.body.email;
+    // const email = req.body;
+    const bdata = req.body;
+    // console.log(formData)
+    const bills = await BillModel.find({
+        Businessman_email:bdata.email,
+    });
+    console.log(bills);
+    return res.json(bills);
+})
+
+app.post('/UpdateBusinessDetails', async (req, res) => {
+    const formData = req.body.formData;
+    const userData = req.body.userData;
+    console.log(formData);
+    console.log(userData);
+
+    const updatedUser = await Businessman.findByIdAndUpdate(userData._id, formData, { new: true });
+
+    res.json(formData);
+})
 
 
 
@@ -1222,6 +1251,8 @@ function getContentType(filePath) {
             return 'application/octet-stream'; // Default content type
     }
 }
+
+
 
 
 

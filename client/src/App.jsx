@@ -14,6 +14,7 @@ import BusinessmanHome from './BusinessmanHome';
 import Businesslogin from './B_login';
 import Businesssignup from './B_signup';
 import Purchaseform from './Purchaseform';
+import MyBills from './myBills'
 
 
 
@@ -35,6 +36,7 @@ function App() {
         <Route path="/Busilogin" element={<Businesslogin />} />
         <Route path="/Busisignup" element={<Businesssignup />} />
         <Route path="/purchaseform" element={<Purchaseform />} />
+        <Route path="/mybills" element={<MyBills/>}/>
       </Routes>
     </BrowserRouter>
   )

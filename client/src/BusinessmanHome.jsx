@@ -6,7 +6,10 @@ import { faBuildingColumns, faUsers, faLocation } from '@fortawesome/free-solid-
 import { FaVideo, FaUserFriends, FaBullhorn } from 'react-icons/fa';
 import Image from 'react-bootstrap/Image';
 import welcomeImage from './assets/welcome.png';
+import profileImage from './assets/user.png';
 import { faCalendar, faCheckCircle, faHandsPraying, faInr, faRupee, faTimeline, faTimes, faUpload, faUser } from '@fortawesome/free-solid-svg-icons';
+import Profile_Busi from './Profile_Busi'
+import Modal from 'react-bootstrap/Modal';
 
 const BusinessmanHome = () => {
     const navigate = useNavigate();
@@ -17,6 +20,8 @@ const BusinessmanHome = () => {
     const [viewcolleges, setViewColleges] = useState(false);
     const [students, setStudents] = useState([]);
     const [count, setCount] = useState(null);
+    const [profile, setProfile] = useState(false);
+
 
     const bannerStyle = {
         background: 'linear-gradient(135deg, #ff6ec4, #7873f5)',
@@ -146,6 +151,10 @@ const BusinessmanHome = () => {
         });
     };
 
+    const profile_show = (e) => {
+        setProfile(!profile);
+    }
+
     return (
         <>
             <div>
@@ -168,14 +177,26 @@ const BusinessmanHome = () => {
                                 <li className="nav-item">
                                     <a className="nav-link active" style={{ marginTop: '5px', color: '#C8C8C8', fontSize: '17px', }} aria-current="page" href="/BusinessmanHome"><b>Home</b></a>
                                 </li>
-                                {
-                                    ismanLoggedIn && (
-                                        <li className="nav-item">
-                                            <button className="btn_1" style={{ marginTop: '12px', color: '#C8C8C8', fontSize: '17px', }} aria-current="page" onClick={Logout}>Logout</button>
-                                        </li>
-                                    )
-                                }
+
+                                <li className="nav-item">
+                                    <button className="btn_1" style={{ marginTop: '12px', color: '#C8C8C8', fontSize: '17px', }} aria-current="page" onClick={Logout}>Logout</button>
+                                </li>
+
                             </ul>
+                            <a style={{ backgroundColor: 'linear-gradient(to bottom right, #ff4d4d, #007bff)', }} onClick={profile_show}> {/* Replace '/profile' with the link you want */}
+                                <img
+                                    src={profileImage}
+                                    alt="Profile"
+                                    style={{
+                                        width: '40px',
+                                        height: '40px',
+                                        backgroundColor: 'linear-gradient(to bottom right, #ff4d4d, #007bff)',
+                                        borderRadius: '50%',
+                                        marginLeft: 'auto',
+                                        marginRight: '10px',
+                                    }}
+                                />
+                            </a>
                         </div>
                     </div>
                 </nav>
@@ -223,6 +244,11 @@ const BusinessmanHome = () => {
 
                     </div>
                 </div>
+                {
+                    profile &&
+                            <Profile_Busi onClose={profile_show} />
+                        
+                }
 
             </div>
 
