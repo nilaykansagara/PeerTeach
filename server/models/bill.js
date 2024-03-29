@@ -49,13 +49,12 @@ const billSchema = new mongoose.Schema({
         required: true,
         default: 0,
     },
-    viewer_cost:{
-        type:Number,
-        // required:true,
+    viewer_cost: {
+        type: Number,
     },
-    plan_type:{
-        type:String,
-        enum:["Basic", "Pro", "Premium"],
+    plan_type: {
+        type: String,
+        enum: ["Basic", "Pro", "Premium"],
     }
 });
 

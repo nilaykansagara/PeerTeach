@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import React from 'react';
 import './home.css';
 import Fingerprint2 from "fingerprintjs2";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAd, faChalkboardUser } from "@fortawesome/free-solid-svg-icons";
 
 function Home() {
     useEffect(() => {
-        const generateFingerprint = async()=>{
-            try{
+        const generateFingerprint = async () => {
+            try {
                 const fingerprintValue = await new Promise((resolve, reject) => {
                     Fingerprint2.get((components) => {
                         const fingerprint = Fingerprint2.x64hash128(components.map(pair => pair.value).join(), 31);
@@ -17,8 +19,7 @@ function Home() {
                 console.log(fingerprintValue);
                 localStorage.setItem('fingerprint', fingerprintValue);
 
-            }catch(error)
-            {
+            } catch (error) {
                 console.log("Fingerprint error");
             }
         }
@@ -50,24 +51,25 @@ function Home() {
 
             <section className="hero" style={{ height: '40%' }}>
                 <div className="hero-content" style={{ marginTop: '2%' }}>
-                    <h2>Peer-to-Peer Learning Made Easy</h2>
-                    <p>Join PeerTeach and start sharing your knowledge with others.</p>
-                    {/* <a href="/Signin">Sign In Now as Student</a><br /><br />
-                    <a href="/Signin">Sign In Now as Businessman</a> */}
-                    <a className="xyz" style={{ marginTop: '25%', marginBottom: '15%' }} href="/videos">Get Started!</a>
-                    <p><a className="new_a" href="/Busilogin">Sponser Video!</a></p>
-                </div>
-            </section>
-            
+                    <h2>Welcome to PeerTeach,</h2>
+                    <p style={{ marginBottom: '9%' }}>Your Gateway to Learning and Advertising Excellence! <br /> Discover a platform where knowledge-sharing meets strategic outreach,<br /> empowering both learners and businesses alike.</p>
+                    <span >
+                        <a className="xyz" href="/videos"><FontAwesomeIcon style={{ color: '#ff4d4d', fontSize: '20px' }} icon={faChalkboardUser} /> &nbsp; PeerTeach learning platform! </a>
+                        <a className="xyz" style={{ marginLeft: '100px', marginBottom: '6%' }} href="/Busilogin"><FontAwesomeIcon style={{ color: '#ff4d4d', fontSize: '20px' }} icon={faAd} /> &nbsp; PeerTeach advertising platform!</a></span>
 
-            
+                </div>
+            </section >
+
+
+
 
             {/* Add other sections as per your requirements */}
 
-            <footer style={{ height: '100%' }}>
-                <p>&copy; 2023 PeerTeach. All rights reserved.</p>
-            </footer>
-        </div>
+            < footer style={{ height: '100%' }
+            }>
+                <p>&copy; 2024 PeerTeach. All rights reserved.</p>
+            </footer >
+        </div >
     );
 }
 

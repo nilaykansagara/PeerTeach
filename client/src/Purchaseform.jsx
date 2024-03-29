@@ -23,7 +23,7 @@ import {
     DrawerContent,
     DrawerCloseButton,
 } from '@chakra-ui/react'
-import { faBullhorn, faCalendar, faCheck, faCheckCircle, faCoins, faCrown, faHandsPraying, faInr, faList, faRupee, faSquare, faSquareCheck, faTimeline, faTimes, faUpload, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faBullhorn, faCalendar, faCheck, faCheckCircle, faCoins, faCrown, faHandsPraying, faInr, faList, faRupee, faSquare, faSquareCheck, faTimeline, faTimes, faUpload, faUser, faVideo } from '@fortawesome/free-solid-svg-icons';
 import { faRectangleList } from '@fortawesome/free-solid-svg-icons';
 // import Razorpay from 'razorpay'
 
@@ -534,12 +534,12 @@ function Purchaseform() {
                                 </div>
                             </FormControl>
                         </div> */}
-                        <h1 style={{ marginLeft: '11%' }}><b><FontAwesomeIcon icon={faCrown} /> Plans</b></h1>
+                        <h1 style={{ marginLeft: '11%' }}><b><FontAwesomeIcon style={{ color: '#FFDF00' }} icon={faCrown} /> Plans</b></h1>
                         <div className="flex justify-center" style={{ width: '80%', marginLeft: '9.8%' }}>
                             <div className="columnsp">
                                 <ul className="pricep">
                                     <li style={{ backgroundColor: '#909090' }} className="headerp">Basic</li>
-                                    <li className="greyp"><FontAwesomeIcon icon={faUser} /> 2 Videos / sem</li>
+                                    <li className="greyp"><FontAwesomeIcon icon={faVideo} /> 2 Videos / sem</li>
                                     <li className="greyp" style={{ fontSize: '18px' }}> <FontAwesomeIcon icon={faInr} /> {vc} Viewer Cost</li>
                                     <li style={{ backgroundColor: '#D3D3D3' }}><b><FontAwesomeIcon icon={faInr} /> {costslot1} / day</b></li>
                                     <li className="greyp"><button className="buttonp" onClick={handleShowbs}>Purchase</button></li>
@@ -549,7 +549,7 @@ function Purchaseform() {
                             <div className="columnsp">
                                 <ul className="pricep">
                                     <li style={{ backgroundColor: ' #4CAF50' }} className="headerp">Pro</li>
-                                    <li className="greyp"> <FontAwesomeIcon icon={faUser} /> 4 Videos / sem</li>
+                                    <li className="greyp"> <FontAwesomeIcon icon={faVideo} /> 4 Videos / sem</li>
                                     <li className="greyp" style={{ fontSize: '18px' }}> <FontAwesomeIcon icon={faInr} /> {vc} Viewer Cost</li>
                                     <li style={{ backgroundColor: '#b7dfb9' }} ><b><FontAwesomeIcon icon={faInr} /> {costslot2} / day</b></li>
                                     <li className="greyp"><button className="buttonp" onClick={handleShowpr} >Purchase</button></li>
@@ -559,7 +559,7 @@ function Purchaseform() {
                             <div className="columnsp">
                                 <ul className="pricep">
                                     <li style={{ backgroundColor: ' #FFC107' }} className="headerp">Premium</li>
-                                    <li className="greyp"><FontAwesomeIcon icon={faUser} /> 6 Videos / sem</li>
+                                    <li className="greyp"><FontAwesomeIcon icon={faVideo} /> 6 Videos / sem</li>
                                     <li className="greyp" style={{ fontSize: '18px' }}> <FontAwesomeIcon icon={faInr} /> {vc} Viewer Cost</li>
                                     <li style={{ backgroundColor: ' #FFEAAE' }}><b><FontAwesomeIcon icon={faInr} /> {costslot3} / day</b></li>
                                     <li className="greyp">

@@ -491,10 +491,10 @@ const VideoList = () => {
 
                                 <div key={video._id} style={{ display: 'inline-flex', alignItems: 'center', marginRight: '0.2%', marginBottom: '8px' }}>
                                     {console.log(video.views_cnt)}
-                                    <div>
+                                    <div >
                                         {/* Show the ad video if ad is available and showAd is true */}
                                         {video.ad && showAd && (
-                                            <video onEnded={() => handleAdEndForVideo(video._id)} controls width="270" height="152">
+                                            <video onEnded={() => handleAdEndForVideo(video._id)} width="290" height="180" controls>
                                                 <source src={`http://localhost:3001/adAppend/${video._id}`} type="video/mp4" />
                                                 Your browser does not support the video tag.
                                             </video>
@@ -502,19 +502,42 @@ const VideoList = () => {
 
                                         {/* Show the main video if ad has ended or there's no ad */}
                                         {(!video.ad || !showAd || adStates[video._id]) && (
-                                            <video controls autoPlay={video._id === runvid} onPlay={() => recordView(video)} width="270" height="152">
+                                            <video autoPlay={video._id === runvid} onPlay={() => recordView(video)} width="290" height="180" controls>
                                                 <source src={`http://localhost:3001/videos/${video._id}`} type="video/mp4" />
                                                 Your browser does not support the video tag.
                                             </video>
                                         )}
                                     </div>
                                     <div style={{ marginLeft: '10px' }}>
-                                        <p style={{ marginBottom: '1px', fontSize: '25px' }}><b>{video.title}</b></p>
+                                        <p style={{ marginBottom: '-5px', fontSize: '25px' }}><b>{video.title}</b></p>
                                         <p style={{ marginBottom: '1px', fontSize: '15px' }}>{video.otherDetails}</p>
                                         <p style={{ marginBottom: '1px', fontSize: '15px' }}>
                                             Subject: <b>{video.subject}</b> | Semester: <b>{video.semester}</b> | Branch: <b>{video.branch}</b> | Course : <b>{video.course}</b> | College: <b>{video.college}</b> | Batch of Uploader : <b>{video.batch}</b></p>
                                         <p style={{ marginBottom: '0%', fomarginBottom: '2px', fontSize: '15px' }}>Uploaded by: <b>{video.name}</b><br />Email id: <b>{video.email}</b></p>
-                                        {!isLoggedIn && (<><p><FontAwesomeIcon icon={faEye} /> &nbsp; <b> {video.views_cnt}</b></p></>)}
+                                        {!isLoggedIn && (<><p><FontAwesomeIcon icon={faEye} /> <b> {video.views_cnt} </b> &nbsp; &nbsp; &nbsp; &nbsp;<span>
+                                            {video.notes && video.notes.length > 0 && (
+                                                <a
+                                                    href={video.notes}
+                                                    style={{
+                                                        border: 'solid 2px',
+                                                        borderColor: '#72D072',
+                                                        color: 'white',
+                                                        backgroundColor: '#72D072',
+                                                        padding: '2px',
+                                                        borderRadius: '3px',
+                                                        height: '30px',
+                                                        width: '50px',
+                                                        fontSize: '14px',
+                                                        textDecoration: 'none', // Remove underline for the link
+                                                    }}
+                                                    target="_blank" // Open the link in a new tab/window
+                                                    rel="noopener noreferrer"
+
+                                                >
+                                                    Get Notes!
+                                                </a>
+                                            )}
+                                        </span></p></>)}
 
                                         {isLoggedIn && (<>
 
@@ -552,34 +575,34 @@ const VideoList = () => {
                                             &nbsp;
                                             &nbsp;
                                             &nbsp;
+                                            <span>
+                                                {video.notes && video.notes.length > 0 && (
+                                                    <a
+                                                        href={video.notes}
+                                                        style={{
+                                                            border: 'solid 2px',
+                                                            borderColor: '#72D072',
+                                                            color: 'white',
+                                                            backgroundColor: '#72D072',
+                                                            padding: '2px',
+                                                            borderRadius: '3px',
+                                                            marginTop: '0px',
+                                                            height: '30px',
+                                                            width: '50px',
+                                                            fontSize: '14px',
+                                                            textDecoration: 'none', // Remove underline for the link
+                                                        }}
+                                                        target="_blank" // Open the link in a new tab/window
+                                                        rel="noopener noreferrer"
 
+                                                    >
+                                                        Get Notes!
+                                                    </a>
+                                                )}
+                                            </span>
                                         </>)}
 
-                                        <span>
-                                            {video.notes && video.notes.length > 0 && (
-                                                <a
-                                                    href={video.notes}
-                                                    style={{
-                                                        border: 'solid 2px',
-                                                        borderColor: '#72D072',
-                                                        color: 'white',
-                                                        backgroundColor: '#72D072',
-                                                        padding: '2px',
-                                                        borderRadius: '3px',
-                                                        marginTop: '0px',
-                                                        height: '30px',
-                                                        width: '50px',
-                                                        fontSize: '14px',
-                                                        textDecoration: 'none', // Remove underline for the link
-                                                    }}
-                                                    target="_blank" // Open the link in a new tab/window
-                                                    rel="noopener noreferrer"
 
-                                                >
-                                                    Get Notes!
-                                                </a>
-                                            )}
-                                        </span>
                                         &nbsp;
                                         &nbsp;
 

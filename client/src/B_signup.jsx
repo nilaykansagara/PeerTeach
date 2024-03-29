@@ -155,9 +155,9 @@ function Businesssignup() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="row">
-                                            <div className="col-sm-6">
+                                                <div className="col-sm-6">
                                                     <div className="d-flex flex-row align-items-center">
                                                         <i className="fas fa-calendar me-3" style={{ fontSize: '24px' }}></i>
                                                         <input
@@ -183,7 +183,7 @@ function Businesssignup() {
                                                         />
                                                     </div>
                                                 </div>
-                                                
+
                                             </div>
                                         </div>
                                         <button className="btn btn-primary" type="submit">Register</button>
@@ -202,7 +202,7 @@ function Businesssignup() {
             </section>
 
             <footer style={{ marginTop: '-5%' }}>
-                <p>&copy; 2023 PeerTeach. All rights reserved.</p>
+                <p>&copy; 2024 PeerTeach. All rights reserved.</p>
             </footer>
         </div>
     );

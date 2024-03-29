@@ -204,7 +204,7 @@ const BusinessmanHome = () => {
 
                 <div style={bannerStyle}>
                     <div style={{ marginLeft: '1.5%', color: 'black', margin: '1% 7% 1% 7%', fontSize: '17px', textAlign: 'center' }}>
-                        <Image style={{ height: '150px' }} src={welcomeImage} />
+                        <Image style={{ height: '150px', marginTop: '-7%' }} src={welcomeImage} />
                         <h1 style={{ color: '#0076CE', fontSize: '36px', fontWeight: 'bold', marginBottom: '10px' }}><FontAwesomeIcon style={{ color: '#1F305E' }} icon={faHandsPraying} /> Welcome to PeerTeach Advertising Platform</h1>
                         <p style={{ marginBottom: '20px', fontSize: '19px' }}>Attract nearby college students by advertising through PeerTeach. Our platform provides targeted advertising solutions tailored to local college campuses, empowering your business to reach and engage with this specific audience. Grow your business with PeerTeach's effective advertising strategies.</p>
                         <p style={{ fontStyle: 'italic', marginBottom: '20px' }}><b>Discover the power of localized advertising and connect with potential customers like never before.</b></p>
@@ -246,8 +246,8 @@ const BusinessmanHome = () => {
                 </div>
                 {
                     profile &&
-                            <Profile_Busi onClose={profile_show} />
-                        
+                    <Profile_Busi onClose={profile_show} />
+
                 }
 
             </div>

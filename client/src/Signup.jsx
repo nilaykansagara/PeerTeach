@@ -61,7 +61,7 @@ function Signup() {
             const isCourseSelected = !!value; // Convert value to boolean
             setCourseSelected(isCourseSelected);
             console.log("hello from course change");
-            const selectedCollegeObj = colleges.find(colleget => colleget.nickname === college);
+            const selectedCollegeObj = colleges.find(colleget => colleget.name === college);
             //console.log(selectedCollegeObj);
             if (selectedCollegeObj) {
                 const selectedProgram = selectedCollegeObj.programs.find(obj => obj.course === value);
@@ -79,7 +79,7 @@ function Signup() {
             const isbranchSelectedtemp = !!value; // Convert value to boolean
             setgoodsem(isbranchSelectedtemp);
             console.log("hello from branch change");
-            const selectedCollegeObj = colleges.find(colleget => colleget.nickname === college);
+            const selectedCollegeObj = colleges.find(colleget => colleget.name === college);
             //console.log(selectedCollegeObj);
             if (selectedCollegeObj) {
                 const selectedProgram = selectedCollegeObj.programs.find(obj => obj.course === course);
@@ -106,10 +106,12 @@ function Signup() {
         if (name === "college") {
             console.log("Hello from signup DD");
             const selectedCollege = value;
-            const selectedCollegeObj = colleges.find(college => college.nickname === selectedCollege);
+
+            const selectedCollegeObj = colleges.find(college => college.name === selectedCollege);
+            console.log(selectedCollegeObj);
             if (selectedCollegeObj) {
                 setselectedclpr(selectedCollegeObj.programs);
-                //console.log(selectedclpr.programs);
+                console.log(selectedclpr);
             }
             const isclSelected = !!value; // Convert value to boolean
             setcollegeSelected(isclSelected);
@@ -323,7 +325,7 @@ function Signup() {
             </section>
 
             <footer style={{ marginTop: '-5%' }}>
-                <p>&copy; 2023 PeerTeach. All rights reserved.</p>
+                <p>&copy; 2024 PeerTeach. All rights reserved.</p>
             </footer>
         </div>
     );

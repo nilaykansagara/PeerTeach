@@ -99,7 +99,7 @@ function Signin() {
                 </form>
             </section>
             <footer style={{ marginTop: '-4%', marginBottom: '-3%' }}>
-                <p>&copy; 2023 PeerTeach. All rights reserved.</p>
+                <p>&copy; 2024 PeerTeach. All rights reserved.</p>
             </footer>
         </div>
     );
