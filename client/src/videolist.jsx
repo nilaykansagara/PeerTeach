@@ -23,6 +23,7 @@ const VideoList = () => {
     const navigate = useNavigate();
     const [profile, setProfile] = useState(false);
     const [runvid, setrunvid] = useState(null);
+    const [playvid, setplayvid] = useState(null);
     const [searchData, setsearchData] = useState({
         title: '',
         college: '',
@@ -247,10 +248,24 @@ const VideoList = () => {
     // Function to handle ad end for a specific video
     const handleAdEndForVideo = (videoId) => {
         // Update the state to mark the ad as shown for this video
-        setAdStates((prevAdStates) => ({
-            ...prevAdStates,
-            [videoId]: true,
-        }));
+        // setAdStates((prevAdStates) => ({
+        //     ...prevAdStates,
+        //     [videoId]: true,
+        // }));
+        // const my_videos = videos.filter(video => video._id === videoId);
+        // let video = 
+        // setVideos(prevVideos => prevVideos.map(video => {
+        //     if(video._id === videoId)
+        //     {
+        //         const {ad, ...rest} = video;
+        //         return rest;
+        //     }
+        //     return video;
+        // }))
+        console.log("This is finded video");
+        setrunvid(videoId);
+        setplayvid(videoId);
+        // console.log(my_videos);
     };
 
     useEffect(() => {
@@ -326,10 +341,12 @@ const VideoList = () => {
                 console.log("View is updated successfully.");
                 setChange_view((c) => !c)
             })
+    }
 
-
-
-
+    function RefreshPage(){
+        // window.location.reload();
+        setrunvid(null);
+        // setplayvid(null);
     }
 
     return (
@@ -493,16 +510,16 @@ const VideoList = () => {
                                     {console.log(video.views_cnt)}
                                     <div >
                                         {/* Show the ad video if ad is available and showAd is true */}
-                                        {video.ad && showAd && (
+                                        {(video.ad && runvid != video._id)  && (
                                             <video onEnded={() => handleAdEndForVideo(video._id)} width="290" height="180" controls>
                                                 <source src={`http://localhost:3001/adAppend/${video._id}`} type="video/mp4" />
                                                 Your browser does not support the video tag.
                                             </video>
                                         )}
-
+            
                                         {/* Show the main video if ad has ended or there's no ad */}
-                                        {(!video.ad || !showAd || adStates[video._id]) && (
-                                            <video autoPlay={video._id === runvid} onPlay={() => recordView(video)} width="290" height="180" controls>
+                                        {(!video.ad || runvid === video._id) && (
+                                            <video autoPlay={video._id === runvid} onPlay={() => recordView(video)} onEnded={RefreshPage} width="290" height="180" controls>
                                                 <source src={`http://localhost:3001/videos/${video._id}`} type="video/mp4" />
                                                 Your browser does not support the video tag.
                                             </video>
@@ -674,3 +691,5 @@ const VideoList = () => {
 };
 
 export default VideoList;
+
+// || !showAd || adStates[video._id]

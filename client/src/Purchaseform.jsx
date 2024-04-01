@@ -608,9 +608,11 @@ function Purchaseform() {
                                 <Button variant="secondary" onClick={handleClose2}>
                                     <b>Close</b>
                                 </Button>
+                                <a style={{textDecoration:'none', textDecorationColor:'black'}} href='/myBills'>
                                 <Button style={{ backgroundColor: 'green', color: 'white' }} variant="primary">
-                                    Check Bill
+                                    My Bills
                                 </Button>
+                                </a>
                             </Modal.Footer>
                         </Modal>
                         {/* <Drawer
@@ -654,14 +656,13 @@ function Purchaseform() {
                                 </DrawerBody>
                             </DrawerContent>
                         </Drawer> */}
-                    </div >
+                    </div>
                 </Carousel.Item>
             </Carousel>
             {
                 profile &&
                 <Profile_Busi onClose={profile_show} />
             }
-
 
         </>
     );

@@ -177,6 +177,9 @@ const BusinessmanHome = () => {
                                 <li className="nav-item">
                                     <a className="nav-link active" style={{ marginTop: '5px', color: '#C8C8C8', fontSize: '17px', }} aria-current="page" href="/BusinessmanHome"><b>Home</b></a>
                                 </li>
+                                <li className="nav-item">
+                                    <a className="nav-link active" style={{ marginTop: '5px', color: '#C8C8C8', fontSize: '17px', }} aria-current="page" href="/myBills"><b>My Bills</b></a>
+                                </li>
 
                                 <li className="nav-item">
                                     <button className="btn_1" style={{ marginTop: '12px', color: '#C8C8C8', fontSize: '17px', }} aria-current="page" onClick={Logout}>Logout</button>

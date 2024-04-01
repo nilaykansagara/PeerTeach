@@ -1136,6 +1136,7 @@ async function findAdVideos(bill, uni) {
                         email: email2,
                         semester: { $mod: [2, 0] }
                     }).sort({ _id: -1 });
+                    console.log("THis is email of students:", email1, email2);
                     console.log(email2);
                     console.log("before bill slots " + bill.slots);
                     for (let i = 0; i < bill.slots; i++) {
