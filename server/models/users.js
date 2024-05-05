@@ -43,6 +43,11 @@ const UserSchema = new mongoose.Schema({
             }
         }
     ],
+    earning: {
+        type: Number,
+        default: 0,
+        required: true
+    }
 });
 
 const UserModel = mongoose.model("students", UserSchema);

@@ -279,6 +279,19 @@ function Signup() {
                                                 </div>
                                             </div>
                                             <div className="row">
+                                                {/* <div className="col-sm-6">
+                                                    <div className="d-flex flex-row align-items-center">
+                                                        <i className="fas fa-lock me-3" style={{ fontSize: '24px' }}></i>
+                                                        <input
+                                                            className="form-control"
+                                                            placeholder="Password"
+                                                            type="password"
+                                                            value={password}
+                                                            onChange={(e) => setPass(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div> */}
                                                 <div className="col-sm-6">
                                                     <div className="d-flex flex-row align-items-center">
                                                         <i className="fas fa-lock me-3" style={{ fontSize: '24px' }}></i>
@@ -288,6 +301,8 @@ function Signup() {
                                                             type="password"
                                                             value={password}
                                                             onChange={(e) => setPass(e.target.value)}
+                                                            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{7,}"
+                                                            title="Password must be at least 7 characters long and contain at least one digit, one uppercase letter, one lowercase letter, and one special character."
                                                             required
                                                         />
                                                     </div>

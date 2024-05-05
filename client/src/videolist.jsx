@@ -343,7 +343,7 @@ const VideoList = () => {
             })
     }
 
-    function RefreshPage(){
+    function RefreshPage() {
         // window.location.reload();
         setrunvid(null);
         // setplayvid(null);
@@ -510,13 +510,13 @@ const VideoList = () => {
                                     {console.log(video.views_cnt)}
                                     <div >
                                         {/* Show the ad video if ad is available and showAd is true */}
-                                        {(video.ad && runvid != video._id)  && (
+                                        {(video.ad && runvid != video._id) && (
                                             <video onEnded={() => handleAdEndForVideo(video._id)} width="290" height="180" controls>
                                                 <source src={`http://localhost:3001/adAppend/${video._id}`} type="video/mp4" />
                                                 Your browser does not support the video tag.
                                             </video>
                                         )}
-            
+
                                         {/* Show the main video if ad has ended or there's no ad */}
                                         {(!video.ad || runvid === video._id) && (
                                             <video autoPlay={video._id === runvid} onPlay={() => recordView(video)} onEnded={RefreshPage} width="290" height="180" controls>
@@ -589,10 +589,11 @@ const VideoList = () => {
                                                 </>
                                             )}
 
-                                            &nbsp;
-                                            &nbsp;
-                                            &nbsp;
+
                                             <span>
+                                                &nbsp;
+                                                &nbsp;
+                                                &nbsp;
                                                 {video.notes && video.notes.length > 0 && (
                                                     <a
                                                         href={video.notes}
@@ -617,11 +618,9 @@ const VideoList = () => {
                                                     </a>
                                                 )}
                                             </span>
+                                            &nbsp;
+                                            &nbsp;
                                         </>)}
-
-
-                                        &nbsp;
-                                        &nbsp;
 
                                         {watchlaterflag && (
                                             <button style={{ backgroundColor: '#FF3131', border: 'solid 2px', borderColor: 'black', borderRadius: '15px' }} onClick={() => removewatchLater(video._id, userinfo.email)}>

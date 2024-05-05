@@ -70,22 +70,23 @@ const BusinessmanHome = () => {
     // };
 
     const iconStyle = {
-        fontSize: '50px',
+        fontSize: '40px',
         color: '#ff6ec4',
         marginBottom: '20px',
     };
 
     const titleStyle = {
-        fontSize: '24px',
+        fontSize: '20px',
         fontWeight: 'bold',
         color: '#7873f5',
         marginBottom: '10px',
     };
 
     const descriptionStyle = {
-        fontSize: '18px',
+        fontSize: '14px',
         color: '#333',
         lineHeight: '1.5',
+        width: '400px'
     };
 
     const Logout = () => {
@@ -133,6 +134,12 @@ const BusinessmanHome = () => {
 
     const viewColleges = () => {
         setViewColleges(!viewcolleges);
+        setTimeout(() => {
+            const collegesSection = document.getElementById('colleges-section');
+            if (collegesSection) {
+                collegesSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }, 10);
     }
 
     useEffect(() => {
@@ -154,6 +161,7 @@ const BusinessmanHome = () => {
     const profile_show = (e) => {
         setProfile(!profile);
     }
+
 
     return (
         <>
@@ -216,8 +224,8 @@ const BusinessmanHome = () => {
                 </div>
 
                 {viewcolleges && nearbycolleges.map((college, index) => (
-                    <div className="nav-item" key={index}>
-                        <button className='card_style' onClick={() => collegeClicked(college._id)}>
+                    <div className="nav-item" key={index} id="colleges-section">
+                        <button style={{ marginRight: '0%' }} className='card_style' onClick={() => collegeClicked(college._id)}>
                             <div className='clg_icon'><FontAwesomeIcon icon={faBuildingColumns} />&nbsp; {college.name}</div>
                             <div className='user_icon' ><FontAwesomeIcon icon={faUsers} /> &nbsp;{students.find(student => student.college === college.name)?.count}</div>
                             <div className='user_icon'><FontAwesomeIcon icon={faLocation} /> &nbsp;{college.address}, {college.pincode}</div>
@@ -228,18 +236,18 @@ const BusinessmanHome = () => {
                 <div style={{ ...featureStyle, marginTop: viewcolleges ? '2vw' : '50px' }}>
                     {/* <h2 style={{ textAlign: 'center', color: '#7873f5', marginBottom: '30px' }}>Features</h2> */}
 
-                    <div style={{ display: 'flex', marginTop: '5vw', justifyItems: 'flex-start' }}>
-                        <div>
+                    <div style={{ display: 'flex', marginTop: '7vw', justifyItems: 'flex-start' }}>
+                        <div style={{ marginLeft: '-30%' }}>
                             <FaBullhorn style={iconStyle} />
                             <h2 style={titleStyle}>Boost Brand Awareness</h2>
                             <p style={descriptionStyle}>Increase brand recognition and awareness by promoting your services through student-generated content. Stand out in a crowded market and attract more customers.</p>
                         </div>
-                        <div style={{ marginLeft: '2rem' }}>
+                        <div style={{ marginLeft: '1%' }}>
                             <FaVideo style={iconStyle} />
                             <h2 style={titleStyle}>Advertise in Student Videos</h2>
                             <p style={descriptionStyle}>Reach your target audience by placing ads in videos created by students. Connect with a diverse audience through engaging content.</p>
                         </div>
-                        <div style={{ marginRight: '2vw' }}>
+                        <div >
                             <FaUserFriends style={iconStyle} />
                             <h2 style={titleStyle}>Expand Your Reach</h2>
                             <p style={descriptionStyle}>Tap into the dynamic student community and increase brand visibility. Connect with potential customers and expand your market reach.</p>

@@ -47,6 +47,7 @@ function Businesssignup() {
     return (
         <div>
             <header>
+                <p></p>
                 <a style={{
                     fontWeight: 'bold',
                     fontSize: '40px',
@@ -56,14 +57,11 @@ function Businesssignup() {
                     textDecoration: 'none', // Remove underline
                     textAlign: 'center'
                 }} href="/">PeerTeach</a>
-                <p>
-                    <a class="nav-link active" style={{ marginBottom: '-1%', marginTop: '5px', color: '#C8C8C8', fontSize: '17px', }} aria-current="page" href="/videos">Home</a>
-                </p>
-
+                <p></p>
             </header>
 
             <section className="hero" >
-                <form onSubmit={handleSubmit} style={{ marginTop: '-6%', marginBottom: '-1%' }}> {/*width: '1000px'*/}
+                <form onSubmit={handleSubmit} style={{ marginTop: '-6%', marginBottom: '0%' }}> {/*width: '1000px'*/}
                     <div className="container-fluid d-flex justify-content-center align-items-center"> {/** vh-100 */}
                         <div className="card text-black m-5" style={{ borderRadius: '25px', maxWidth: '1200px' }}> {/* height: '70%'*/}
                             <div className="card-body">
@@ -105,7 +103,7 @@ function Businesssignup() {
                                                         <i className="fas fa-school me-3" style={{ fontSize: '24px' }}></i>
                                                         <input
                                                             className="form-control"
-                                                            placeholder="Phone NUmber"
+                                                            placeholder="Phone Number"
                                                             type="number"
                                                             value={phone_number}
                                                             onChange={(e) => setPhone(e.target.value)}
@@ -170,6 +168,19 @@ function Businesssignup() {
                                                         />
                                                     </div>
                                                 </div>
+                                                {/* <div className="col-sm-6">
+                                                    <div className="d-flex flex-row align-items-center">
+                                                        <i className="fas fa-lock me-3" style={{ fontSize: '24px' }}></i>
+                                                        <input
+                                                            className="form-control"
+                                                            placeholder="Password"
+                                                            type="password"
+                                                            value={password}
+                                                            onChange={(e) => setPass(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div> */}
                                                 <div className="col-sm-6">
                                                     <div className="d-flex flex-row align-items-center">
                                                         <i className="fas fa-lock me-3" style={{ fontSize: '24px' }}></i>
@@ -179,6 +190,8 @@ function Businesssignup() {
                                                             type="password"
                                                             value={password}
                                                             onChange={(e) => setPass(e.target.value)}
+                                                            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{7,}"
+                                                            title="Password must be at least 7 characters long and contain at least one digit, one uppercase letter, one lowercase letter, and one special character."
                                                             required
                                                         />
                                                     </div>

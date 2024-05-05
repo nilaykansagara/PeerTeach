@@ -28,7 +28,7 @@ const VideoUploadForm = () => {
         dislikec: 0,
     });
     const [errors, setErrors] = useState({});
-    const [verified, setVerified] = useState(0);
+    const [verified, setVerified] = useState(null);
     const [colleges, setColleges] = useState([]);
     const [clslflag, setclsl] = useState(null);
     const [courseSelected, setCourseSelected] = useState(false);
@@ -275,7 +275,7 @@ const VideoUploadForm = () => {
     return (
         <div style={{ background: 'rgba(0, 0, 0, 0.5)', height: '50rem', display: 'grid', justifyContent: 'center' }}>
             <div><ToastContainer /></div>
-            <div className='uploadBox' style={{ marginTop: '10%', width: '110%' }}>
+            <div className='uploadBox' style={{ marginTop: '-24%', width: '107%', marginLeft: '-4%' }}>
                 <div>
                     <form onSubmit={handleSubmit}>
                         <div>
@@ -418,7 +418,7 @@ const VideoUploadForm = () => {
                             </div>
                         </div>
                         <div className="col-md-12">
-                            <label htmlFor="notes">Google drive link for notes*</label>
+                            <label htmlFor="notes">Google drive link for notes</label>
                             <input
                                 type="text"
                                 id="notes"

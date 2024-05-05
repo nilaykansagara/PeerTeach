@@ -38,7 +38,9 @@ function Businesslogin() {
     return (
         <div>
             <header>
+                <p></p>
                 <a style={{
+                    marginTop: '2%',
                     fontWeight: 'bold',
                     fontSize: '40px',
                     color: 'transparent',
@@ -47,14 +49,13 @@ function Businesslogin() {
                     textDecoration: 'none', // Remove underline
                     textAlign: 'center'
                 }} href="/">PeerTeach</a>
-                <p>
-                    <a class="nav-link active" style={{ marginBottom: '-1%', marginTop: '5px', color: '#C8C8C8', fontSize: '17px', }} aria-current="page" href="/videos">Home</a>
-                </p>
+                <p></p>
+
 
             </header>
 
             <section style={{ height: '100%' }} className="hero" >
-                <form style={{ marginTop: '-5%', marginBottom: '-1%' }} onSubmit={handleSubmit} >
+                <form style={{ marginTop: '-5%', marginBottom: '0%' }} onSubmit={handleSubmit} >
                     <div className="container-fluid d-flex justify-content-center align-items-center vh-900">
                         <div className="card text-black m-5" style={{ borderRadius: '25px', maxWidth: '800px', height: '60%' }}>
                             <div className="card-body">

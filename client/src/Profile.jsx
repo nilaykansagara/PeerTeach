@@ -87,6 +87,7 @@ const Profile = ({ onClose }) => {
                 <p>Email: &nbsp;<b>{userData.email}</b></p>
                 <p>Collage: &nbsp;<b>{userData.college}</b></p>
                 <p>Course: &nbsp;<b>{userData.course}</b></p>
+                <p style={{ fontSize: '19px' }}>Total Earnings: &nbsp;<b style={{ color: 'green' }}>{userData.earning} Rs.</b></p>
               </div>
               <div className='v1' style={{ borderLeft: '1px solid grey', height: '100px', marginLeft: '20px', marginRight: '20px' }} />
               <div className='prof_right'>

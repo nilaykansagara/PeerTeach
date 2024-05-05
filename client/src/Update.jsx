@@ -84,22 +84,22 @@ const Update = ({ cancelUpdate }) => {
                             {/* <p>Email: {userData.email}</p> */}
 
                             <div style={{ display: 'flex' }}>
-                                <p style={{ marginRight: '7px' }}>College:</p><input name='college' style={{ height: '20px', width: '50%' }} onChange={handleChange} value={formData.college} type='text' />
+                                <p style={{ marginRight: '7px' }}>College:</p><input name='college' style={{ height: '20px', width: '50%' }} onChange={handleChange} value={formData.college} type='text' disabled />
                             </div>
                             <div style={{ display: 'flex' }}>
-                                <p style={{ marginRight: '7px' }}>Course:</p><input name='course' style={{ height: '20px', width: '50%' }} onChange={handleChange} value={formData.course} type='text' />
+                                <p style={{ marginRight: '7px' }}>Course:</p><input name='course' style={{ height: '20px', width: '50%' }} onChange={handleChange} value={formData.course} type='text' disabled />
                             </div>
                         </div>
                         <div className='v1' style={{ borderLeft: '1px solid grey', height: '100px', marginLeft: '20px', marginRight: '20px' }} />
                         <div className='prof_right'>
                             <div style={{ display: 'flex' }}>
-                                <p style={{ marginRight: '10px' }}>Branch:</p><input name='branch' style={{ height: '20px', width: '50%' }} onChange={handleChange} value={formData.branch} type='text' />
+                                <p style={{ marginRight: '10px' }}>Branch:</p><input name='branch' style={{ height: '20px', width: '50%' }} onChange={handleChange} value={formData.branch} type='text' disabled />
                             </div>
                             <div style={{ display: 'flex' }}>
                                 <p style={{ marginRight: '10px' }}>Sem:</p><input name='currentSem' style={{ height: '20px', width: '50%' }} onChange={handleChange} value={formData.currentSem} type='text' />
                             </div>
                             <div style={{ display: 'flex' }}>
-                                <p style={{ marginRight: '10px' }}>Year:</p><input name='batchYear' style={{ height: '20px', width: '50%' }} onChange={handleChange} value={formData.batchYear} type='text' />
+                                <p style={{ marginRight: '10px' }}>Year:</p><input name='batchYear' style={{ height: '20px', width: '50%' }} onChange={handleChange} value={formData.batchYear} type='text' disabled />
                             </div>
                         </div>
                     </div>

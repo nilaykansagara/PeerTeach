@@ -118,7 +118,7 @@ app.post('/VideoFilter', async (req, res) => {
         console.log(req.body);
 
         // Use the filter to find matching videos
-        const videos = await Video.find(filter, '_id title college course branch semester subject otherDetails videoPath name email likec dislikec liked disliked batch notes ad')
+        const videos = await Video.find(filter, '_id title college course branch semester subject otherDetails videoPath name email likec dislikec liked disliked batch notes ad views_cnt')
             .sort({ _id: -1 });
 
         console.log("Result");
@@ -148,7 +148,7 @@ app.post('/likefind/:email', async (req, res) => {
     console.log("i am don");
     try {
 
-        const videos = await Video.find({}, '_id title college course branch semester subject otherDetails videoPath name email notes likec dislikec liked disliked').sort({ _id: -1 });
+        const videos = await Video.find({}, '_id title college course branch semester subject otherDetails videoPath name email notes likec dislikec liked disliked views_cnt').sort({ _id: -1 });
 
         const likedVideos = videos.filter(video => video.liked.includes(userEmail));
         console.log("don video liked");
@@ -795,7 +795,7 @@ app.post('/addBill', upload_ad.single('ad'), async (req, res) => {
         }
 
         const final_date = new Date(temp_date);
-        
+
         console.log("THis is vc", req.body.vc)
         // Create a new bill entry
         const newBill = new BillModel({
@@ -973,15 +973,14 @@ app.post('/findAdVideos', async (req, res) => {
 });
 
 
-app.post('/findBills', async(req, res)=>
-{
+app.post('/findBills', async (req, res) => {
     console.log(req.body);
     // const {email} = req.body.email;
     // const email = req.body;
     const bdata = req.body;
     // console.log(formData)
     const bills = await BillModel.find({
-        Businessman_email:bdata.email,
+        Businessman_email: bdata.email,
     });
     console.log(bills);
     return res.json(bills);
@@ -1065,6 +1064,13 @@ async function findAdVideos(bill, uni) {
                         }
                     }
 
+                    for (let st of students) {
+                        if (st.email === email1 || st.email === email2) {
+                            st.earning = st.earning + bill.slots * 10;
+                            await st.save();
+                        }
+                    }
+
                     const decvideos1 = await Video.find({
                         email: email1,
                         semester: { $mod: [2, 1] }
@@ -1125,6 +1131,12 @@ async function findAdVideos(bill, uni) {
                             }
                         }
                     }
+                    for (let st of students) {
+                        if (st.email === email1 || st.email === email2) {
+                            st.earning = st.earning + bill.slots * 10;
+                            await st.save();
+                        }
+                    }
 
                     const decvideos1 = await Video.find({
                         email: email1,
@@ -1182,14 +1194,29 @@ cron.schedule('*/10 * * * * *', async () => {
     //     }
     // }
     const currentDate = new Date().toDateString();
-    const cDate = new Date();
+    const c = new Date();
+    const cDate = new Date(c.getFullYear(), c.getMonth(), c.getDate()).getTime();;
 
     for (const uni of universities) {
         if (uni.businessman_queue.length != 0) {
+            const alotted_date = new Date(uni.businessman_queue[0].alotted_date.getFullYear(), uni.businessman_queue[0].alotted_date.getMonth(), uni.businessman_queue[0].alotted_date.getDate()).getTime();
             console.log("hello from cron con1");
-            if (uni.businessman_queue[0].alotted_date.toDateString() < currentDate) {
+            console.log("hello from cron con1");
+            console.log(uni.businessman_queue[0].alotted_date.toDateString());
+            console.log(currentDate);
+            console.log(alotted_date < cDate);
+            if (alotted_date < cDate) {
                 console.log("hello from cron con2");
                 uni.businessman_queue.shift();
+                await uni.save();
+                console.log(uni.businessman_queue);
+                for (let video of videos) {
+                    if (video.ad) {
+                        video.ad = null;
+                        await video.save();
+                    }
+                }
+
             }
             if (uni.businessman_queue.length != 0 && uni.businessman_queue[0].alotted_date.toDateString() === currentDate) {
                 console.log("hello from cron con3");
